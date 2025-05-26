@@ -12,6 +12,7 @@ import Sucursales from "./pages/Sucursales";
 import MiCuenta from "./pages/MiCuenta";
 import ConfirmarCorreo from "./pages/ConfirmarCorreo";
 import PedidoConfirmacion from "./pages/PedidoConfirmacion";
+import HistorialPedidos from "./pages/HistorialPedidos";
 
 
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
@@ -55,6 +56,7 @@ function App() {
             <Route path="/mi-cuenta" element={<MiCuenta />} />
             <Route path="/confirmar-correo" element={<ConfirmarCorreo />} />
             <Route path="/pedido/:id" element={<PedidoConfirmacion />} />
+            <Route path="/mis-pedidos" element={<HistorialPedidos />} />
           </Route>
 
 
@@ -68,7 +70,7 @@ function App() {
           >
             <Route index element={<DashboardAdmin />} />
             <Route path="dashboard" element={<DashboardAdmin />} />
-            <Route path="productos" element={<Productos />} />
+            <Route path="productos" element={<Productos/>} />
             <Route path="sucursales" element={<SucursalesAdmin />} />
             <Route path="usuarios" element={<Usuarios />} />
           </Route>

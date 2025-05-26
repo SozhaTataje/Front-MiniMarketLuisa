@@ -86,13 +86,11 @@ const Navbar = () => {
             </Link>
           )}
 
-
           {!usuario && (
             <Link to="/mi-cuenta" className="hover:text-purple-600 font-medium">
               Mi cuenta
             </Link>
           )}
-
           {usuario && (
             <div className="relative" ref={dropdownRef}>
               <button
@@ -102,6 +100,7 @@ const Navbar = () => {
               >
                 <FaUserCircle />
                 <span className="hidden md:inline-block font-semibold truncate max-w-[100px]">
+                  {usuario.nombre}
                 </span>
                 <svg
                   className={`w-4 h-4 ml-1 transition-transform duration-200 ${
@@ -122,23 +121,33 @@ const Navbar = () => {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-20">
-                  <div className="p-4 border-b border-gray-100">
-                    <p className="font-semibold text-gray-800 truncate">
-                    </p>
-                    <p className="text-sm text-gray-500 truncate">{usuario.email}</p>
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-red-600 hover:text-white text-red-600 font-semibold rounded-b-md transition-colors"
-                  >
-                    Cerrar sesión
-                  </button>
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden">
+                  <ul className="py-1 text-gray-800">
+                    <li>
+                      <Link
+                        to="/mis-pedidos"
+                        className="block px-4 py-2 hover:bg-purple-100 text-sm font-medium"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Mis pedidos
+                      </Link>
+                    </li>
+                   <li className="px-4 py-2 text-xs text-gray-800 border-t border-gray-200">
+                      {usuario.email}
+                    </li>
+                    <li className="border-t border-gray-200">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm font-medium text-black hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               )}
             </div>
           )}
-
 
           {/* Carrito */}
           <Link
