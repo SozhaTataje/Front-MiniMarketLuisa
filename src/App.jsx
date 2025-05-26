@@ -9,8 +9,6 @@ import Home from "./pages/Home";
 import ProductList from "./components/ProductList"; 
 import Carrito from "./pages/Carrito";
 import Sucursales from "./pages/Sucursales";
-import Login from "./components/Login";
-import Register from "./components/Register";
 import MiCuenta from "./pages/MiCuenta";
 import ConfirmarCorreo from "./pages/ConfirmarCorreo";
 import PedidoConfirmacion from "./pages/PedidoConfirmacion";
@@ -54,8 +52,6 @@ function App() {
              <Route path="/productos" element={<ProductList />} />
             <Route path="/carrito" element={<Carrito />} />
             <Route path="/sucursales" element={<Sucursales />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
             <Route path="/mi-cuenta" element={<MiCuenta />} />
             <Route path="/confirmar-correo" element={<ConfirmarCorreo />} />
             <Route path="/pedido/:id" element={<PedidoConfirmacion />} />
