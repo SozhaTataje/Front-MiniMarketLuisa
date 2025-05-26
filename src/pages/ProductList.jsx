@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 import axios from "axios";
-import ProductCard from "./ProductCard";
+import ProductCard from "../components/ProductCard";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);

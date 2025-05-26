@@ -6,7 +6,7 @@ import AdminLayout from "./layouts/AdminLayout";
 
 
 import Home from "./pages/Home";
-import ProductList from "./components/ProductList"; 
+import ProductList from "./pages/ProductList"; 
 import Carrito from "./pages/Carrito";
 import Sucursales from "./pages/Sucursales";
 import MiCuenta from "./pages/MiCuenta";
