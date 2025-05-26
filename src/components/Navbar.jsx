@@ -40,7 +40,6 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-md animate-fade-in-down">
       <nav className="p-5 flex flex-col md:flex-row justify-between items-center gap-4 transition-all duration-300">
-        {/* Logo */}
         <Link
           to="/"
           className="text-2xl font-bold text-purple-600 hover:scale-105 transition-transform duration-300"
@@ -48,8 +47,6 @@ const Navbar = () => {
           <span className="text-purple-500">Minimarket</span>{" "}
           <span className="text-orange-500">Luisa</span>
         </Link>
-
-        {/* Buscador */}
         <form
           onSubmit={handleSearch}
           className="flex items-center w-full md:w-1/3 bg-gray-100 rounded overflow-hidden shadow-inner"
@@ -148,8 +145,6 @@ const Navbar = () => {
               )}
             </div>
           )}
-
-          {/* Carrito */}
           <Link
             to="/carrito"
             className="relative text-purple-600 text-xl hover:scale-110 transition-transform"
