@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }) => {
     const roles = decoded.rol.map(r => r.authority);
     setUsuario({ email: decoded.email, nombre: decoded.nombre, roles });
   };
-
   const logout = () => {
     localStorage.removeItem('token');
     setUsuario(null);

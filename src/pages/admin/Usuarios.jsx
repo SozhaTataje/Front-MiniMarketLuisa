@@ -32,7 +32,7 @@ const Usuarios = () => {
         <h1 className="text-2xl font-bold text-purple-800">Usuarios</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="flex items-center bg-purple-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
           <FiPlus className="mr-2" /> Registrar Usuario
         </button>

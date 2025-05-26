@@ -4,6 +4,7 @@ import { FiPlus, FiTrash2, FiEdit } from "react-icons/fi";
 import AddProductModal from "./modals/AddProductModal";
 import EditProductModal from "./modals/EditProductModal";
 
+
 const Productos = () => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,6 +13,7 @@ const Productos = () => {
   const [selectedSucursal, setSelectedSucursal] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
 
   useEffect(() => {
     axios
@@ -28,22 +30,29 @@ const Productos = () => {
     setLoading(true);
     axios
       .get(`http://localhost:3600/productosucursal/sucursal/${selectedSucursal}`)
-      .then((res) => setProductos(res.data))
+      .then((res) => {
+        console.log("Productos recargados:", res.data);
+        setProductos(res.data);
+      })
       .catch((e) => console.error("Error cargando productos:", e))
       .finally(() => setLoading(false));
   };
-
 
   useEffect(() => {
     fetchProductos();
   }, [selectedSucursal]);
 
+  const handleEditClick = (productoSucursal) => {
+    if (!productoSucursal.sucursal) {
+      productoSucursal.sucursal = { idsucursal: selectedSucursal };
+    }
+    setEditingProduct(productoSucursal);
+    setShowEditModal(true);
+  };
 
-const handleEditClick = (productoSucursal) => {
-  setEditingProduct(productoSucursal.producto);
-  setShowEditModal(true);
-};
 
+
+ 
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -116,7 +125,7 @@ const handleEditClick = (productoSucursal) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="text-center py-8 text-gray-500">
+                    <td colSpan={5} className="text-center py-8 text-gray-500">
                       No hay productos registrados.
                     </td>
                   </tr>
@@ -152,6 +161,7 @@ const handleEditClick = (productoSucursal) => {
           }}
         />
       )}
+
     </div>
   );
 };

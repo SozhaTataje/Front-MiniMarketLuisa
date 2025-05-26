@@ -57,16 +57,8 @@ const Carrito = () => {
       return;
     }
 
-    for (const p of carrito) {
-      if (!p.idProductoSucursal) {
-        alert(`Falta el idProductoSucursal para: ${p.nombre}`);
-        return;
-      }
-    }
-
     try {
       setProcesando(true);
-
       const pedido = {
         nombre: "Cliente",
         apellido: "Ejemplo",

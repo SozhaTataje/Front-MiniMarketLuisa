@@ -1,6 +1,7 @@
 import slider1 from "../assets/slider1.jpg";
 import slider2 from "../assets/slider2.jpg";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const slides = [slider1, slider2];
 
@@ -12,14 +13,13 @@ const Slider = () => {
 
   return (
     <div className="w-[90vw] max-w-[3000px] mx-auto my-10 relative h-[700px] rounded-lg overflow-hidden shadow-lg">
-     <img
+      <img
         src={slides[index]}
         alt="slider"
         className="w-full h-full object-cover transition-transform duration-800 ease-in-out"
         style={{ transform: "scale(1.05)" }}
       />
 
-      
       <div className="absolute inset-0 bg-opacity-50 flex flex-col justify-center items-start px-16 md:px-24 lg:px-32 text-white z-20">
         <h2 className="text-4xl md:text-6xl font-extrabold drop-shadow-lg">
           Nuevos Productos
@@ -27,14 +27,13 @@ const Slider = () => {
         <p className="mt-4 text-lg md:text-xl max-w-xl drop-shadow-md">
           Conoce los nuevos productos que llegaron a nuestras sucursales
         </p>
-        <a
-          href="/productos"
+        <Link
+          to="/productos"
           className="mt-8 inline-block bg-purple-600 hover:bg-purple-700 transition-colors px-8 py-3 rounded-full font-semibold shadow-lg"
         >
           Explorar Productos
-        </a>
+        </Link>
       </div>
-      
 
       {/* Botones de slider */}
       <button

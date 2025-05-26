@@ -69,7 +69,6 @@ const Navbar = () => {
           </button>
         </form>
 
-        {/* Menú de navegación */}
         <div className="flex items-center gap-5 text-sm md:text-base transition-all duration-300">
           <Link to="/" className="hover:text-purple-600 font-medium">
             Inicio
