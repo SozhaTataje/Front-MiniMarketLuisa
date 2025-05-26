@@ -1,11 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 
 const MiCuenta = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const [modo, setModo] = useState("login");
   const [form, setForm] = useState({
     nombre: "",
@@ -20,53 +20,55 @@ const MiCuenta = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    if (modo === "login") {
-      const res = await axios.post("http://localhost:3600/api/usuario/login", {
-        email: form.email,
-        password: form.password,
-      });
+    try {
+      if (modo === "login") {
+        const res = await axios.post(
+          "http://localhost:3600/api/usuario/login",
+          {
+            email: form.email,
+            password: form.password,
+          }
+        );
 
-      const { token } = res.data;
-      if (!token) {
-        alert("No se recibió token en la respuesta");
-        return;
-      }
+        const { token } = res.data;
+        if (!token) {
+          alert("No se recibió token en la respuesta");
+          return;
+        }
 
-      login(token);
+        login(token);
 
-      const roles = JSON.parse(localStorage.getItem("roles")) || [];
+        const roles = JSON.parse(localStorage.getItem("roles")) || [];
 
-      alert("Inicio de sesión exitoso");
+        alert("Inicio de sesión exitoso");
 
-      if (roles.includes("ROLE_ADMIN")) {
-        navigate("/admin/dashboard");
+        if (roles.includes("ROLE_ADMIN")) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/productos");
+        }
       } else {
-        navigate("/productos");
+        await axios.post("http://localhost:3600/api/usuario/signup", form);
+        alert("Registro exitoso. Ahora inicia sesión.");
+        navigate("/mi-cuenta", { state: { modo: "login" } });
       }
-    } else {
-      await axios.post("http://localhost:3600/api/usuario/signup", form);
-      alert("Registro exitoso. Ahora inicia sesión.");
-      navigate("/mi-cuenta", { state: { modo: "login" } });
+    } catch (error) {
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.includes("no se ha verificado")
+      ) {
+        alert("Usuario no verificado. Por favor confirma tu correo.");
+        navigate("/confirmar-correo", { state: { email: form.email } });
+      } else {
+        alert(
+          "Error: " +
+            (error.response?.data || error.message || "Servidor no disponible")
+        );
+      }
     }
-  } catch (error) {
-    if (
-      error.response?.status === 403 &&
-      error.response?.data?.includes("no se ha verificado")
-    ) {
-      alert("Usuario no verificado. Por favor confirma tu correo.");
-      navigate("/confirmar-correo", { state: { email: form.email } });
-    } else {
-      alert(
-        "Error: " +
-          (error.response?.data || error.message || "Servidor no disponible")
-      );
-    }
-  }
-};
-
+  };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
@@ -120,7 +122,12 @@ const MiCuenta = () => {
               placeholder="Teléfono"
               className="w-full border p-2 rounded"
               value={form.telefono}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d{0,9}$/.test(value)) {
+                handleChange(e); 
+                }
+              }}
               required
             />
           </>
