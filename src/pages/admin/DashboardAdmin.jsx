@@ -1,136 +1,290 @@
 import React, { useEffect, useState, useContext } from "react";
 import api from "../../api/axiosInstance";
-import { FiBox, FiClipboard, FiLogOut, FiArrowLeft } from "react-icons/fi";
+import { FiBox, FiClipboard, FiLogOut, FiArrowLeft,FiUsers, FiMapPin, FiTrendingUp,FiDollarSign, FiShoppingBag} from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { Chart as ChartJS, CategoryScale,LinearScale,BarElement,Title,Tooltip,Legend,} from "chart.js";
-import { Bar } from "react-chartjs-2";
+import {Chart as ChartJS, CategoryScale, LinearScale, BarElement,Title, Tooltip, Legend, ArcElement, LineElement, PointElement} from "chart.js";
+import { Bar, Doughnut, Line } from "react-chartjs-2";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title,Tooltip,Legend);
+
+ChartJS.register( CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 const DashboardAdmin = () => {
   const [productos, setProductos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [sucursales, setSucursales] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [stats, setStats] = useState({
+    ventasHoy: 0,
+    pedidosPendientes: 0,
+    productosBajoStock: 0,
+    ingresosMes: 0,
+  });
 
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    fetchData();
+    fetchAllData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [resProductos, resPedidos] = await Promise.all([
+      const [resProductos, resPedidos, resUsuarios, resSucursales] = await Promise.all([
         api.get("/producto/all?param=x"),
         api.get("/pedido/all"),
+        api.get("/api/usuario/all"),
+        api.get("/sucursal/all?param=x"),
       ]);
+
       setProductos(resProductos.data);
       setPedidos(resPedidos.data);
+      setUsuarios(resUsuarios.data);
+      setSucursales(resSucursales.data);
+      calculateStats(resPedidos.data, resProductos.data);
     } catch (error) {
-      console.error("Error cargando datos:", error);
+      console.error("Error al cargar los datos:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => { logout(); navigate("/");};
+  const calculateStats = (pedidosData, productosData) => {
+    const hoy = new Date().toDateString();
+    const ventasHoy = pedidosData.filter(p =>
+      new Date(p.fecha).toDateString() === hoy && p.estado === "ENTREGADO"
+    ).length;
 
-  const handleBackToHome = () => {navigate("/");};
+    const pedidosPendientes = pedidosData.filter(p => p.estado === "PENDIENTE").length;
+    const productosBajoStock = Math.floor(productosData.length * 0.15);
 
-  const data = {
-    labels: ["Productos", "Pedidos"],
+    const ingresosMes = pedidosData
+      .filter(p => p.estado === "ENTREGADO")
+      .reduce((total, p) =>
+        total + (p.pedidoProducto?.reduce((sum, pp) => sum + pp.subtotal, 0) || 0), 0
+      );
+
+    setStats({ ventasHoy, pedidosPendientes, productosBajoStock, ingresosMes });
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  const handleBackToHome = () => navigate("/");
+
+  const barData = {
+    labels: ["Productos", "Pedidos", "Usuarios", "Sucursales"],
     datasets: [
       {
         label: "Cantidad",
-        data: [productos.length, pedidos.length],
-        backgroundColor: ["#7c3aed", "#9333ea"],
-        borderRadius: 5,
+        data: [productos.length, pedidos.length, usuarios.length, sucursales.length],
+        backgroundColor: ["#7c3aed", "#9333ea", "#a855f7", "#b575f7"],
+        borderRadius: 8,
+        borderWidth: 0,
       },
     ],
   };
 
-  const options = {
+  const barOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       title: {
         display: true,
-        text: "Cantidad total de Productos y Pedidos",
-        font: { size: 20, weight: "bold" },
+        text: "Resumen General del Sistema",
+        font: { size: 18, weight: "bold" },
         color: "#4c1d95",
       },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: (context) => `${context.parsed.y} items`,
-        },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: "#e5e7eb" },
+        ticks: { color: "#6b7280" },
+      },
+      x: {
+        grid: { color: "#f3f4f6" },
+        ticks: { color: "#6b7280" },
       },
     },
-    scales: {  y: { beginAtZero: true, ticks: { font: { size: 14 } }, grid: { color: "#e5e7eb" }, },
-      x: {ticks: { font: { size: 14 } }, grid: { color: "#f3f4f6" }, },},};
+  };
+
+
+  const estadosPedidos = pedidos.reduce((acc, pedido) => {
+    acc[pedido.estado] = (acc[pedido.estado] || 0) + 1;
+    return acc;
+  }, {});
+
+  const doughnutData = {
+    labels: Object.keys(estadosPedidos),
+    datasets: [
+      {
+        data: Object.values(estadosPedidos),
+        backgroundColor: ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6", "#f97316"],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: "Estados de Pedidos",
+        font: { size: 16, weight: "bold" },
+        color: "#4c1d95",
+      },
+      legend: { position: "bottom" },
+    },
+  };
+
+
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toDateString();
+  }).reverse();
+
+  const pedidosPorDia = last7Days.map(day =>
+    pedidos.filter(p => new Date(p.fecha).toDateString() === day).length
+  );
+
+  const lineData = {
+    labels: last7Days.map(day =>
+      new Date(day).toLocaleDateString("es-ES", { month: "short", day: "numeric" })
+    ),
+    datasets: [
+      {
+        label: "Pedidos",
+        data: pedidosPorDia,
+        borderColor: "#7c3aed",
+        backgroundColor: "rgba(124, 58, 237, 0.1)",
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const lineOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: "Pedidos - Últimos 7 días",
+        font: { size: 16, weight: "bold" },
+        color: "#4c1d95",
+      },
+      legend: { display: false },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: "#e5e7eb" },
+        ticks: { color: "#6b7280" },
+      },
+      x: {
+        grid: { color: "#f3f4f6" },
+        ticks: { color: "#6b7280" },
+      },
+    },
+  };
+
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xl text-gray-600">Cargando dashboard...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={handleBackToHome}
-          className="flex items-center gap-2 text-purple-700 hover:text-purple-900 transition"
-          title="Volver al inicio"
-        >
-          <FiArrowLeft size={24} />
-          <span className="text-lg font-medium">Inicio</span>
-        </button>
+    <div className="min-h-screen bg-gray-50">
 
-        <h1 className="text-2xl font-bold text-purple-800">Dashboard Admin</h1>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded shadow"
-          title="Cerrar sesión"
-        >
-          <FiLogOut />
-          Cerrar sesión
-        </button>
+      <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handleBackToHome}
+            className="flex items-center gap-2 text-purple-700 hover:text-purple-900 font-medium"
+          >
+            <FiArrowLeft size={20} />
+            <span>Inicio</span>
+          </button>
+          <h1 className="text-2xl font-bold text-gray-800">Dashboard Administrativo</h1>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg shadow"
+          >
+            <FiLogOut size={18} />
+            Cerrar sesión
+          </button>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="text-center text-gray-600">Cargando datos...</div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <StatCard
-              label="Productos"
-              value={productos.length}
-              icon={<FiBox size={40} className="text-purple-600" />}
-            />
-            <StatCard
-              label="Pedidos"
-              value={pedidos.length}
-              icon={<FiClipboard size={40} className="text-purple-600" />}
-            />
-          </div>
 
-          <div
-            className="bg-white p-6 rounded shadow max-w-5xl mx-auto mt-8 center"
-            style={{ height: "400px" }}
-          >
-            <Bar data={data} options={options} />
+      <div className="p-6">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard label="Ventas Hoy" value={stats.ventasHoy} icon={<FiDollarSign />} bgColor="bg-green-50" textColor="text-green-700" />
+          <StatCard label="Pedidos Pendientes" value={stats.pedidosPendientes} icon={<FiClipboard />} bgColor="bg-orange-50" textColor="text-orange-700" />
+          <StatCard label="Stock Bajo" value={stats.productosBajoStock} icon={<FiShoppingBag />} bgColor="bg-red-50" textColor="text-red-700" />
+          <StatCard label="Ingresos del Mes" value={`S/ ${stats.ingresosMes.toFixed(2)}`} icon={<FiTrendingUp />} bgColor="bg-blue-50" textColor="text-blue-700" />
+        </div>
+
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard label="Total Productos" value={productos.length} icon={<FiBox />} />
+          <StatCard label="Total Pedidos" value={pedidos.length} icon={<FiClipboard />} />
+          <StatCard label="Usuarios" value={usuarios.length} icon={<FiUsers />} />
+          <StatCard label="Sucursales" value={sucursales.length} icon={<FiMapPin />} />
+        </div>
+
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-xl shadow-lg">
+            <div style={{ height: "350px" }}>
+              <Bar data={barData} options={barOptions} />
+            </div>
           </div>
-        </>
-      )}
+          <div className="bg-white p-6 rounded-xl shadow-lg">
+            <div style={{ height: "350px" }}>
+              <Doughnut data={doughnutData} options={doughnutOptions} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+          <div style={{ height: "300px" }}>
+            <Line data={lineData} options={lineOptions} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-const StatCard = ({ label, value, icon }) => (
-  <div className="bg-white rounded-lg shadow p-5 flex items-center gap-4">
-    {icon}
-    <div>
-      <h4 className="text-gray-500">{label}</h4>
-      <p className="text-2xl font-bold text-purple-700">{value}</p>
+const StatCard = ({ label, value, icon, bgColor = "bg-white", textColor = "text-purple-700" }) => (
+  <div className={`${bgColor} p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow`}>
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-gray-600 text-sm font-medium mb-1">{label}</p>
+        <p className={`text-2xl font-bold ${textColor}`}>{value}</p>
+      </div>
+      <div className="p-3 bg-white rounded-full shadow-sm text-2xl text-purple-600">
+        {icon}
+      </div>
     </div>
   </div>
 );
