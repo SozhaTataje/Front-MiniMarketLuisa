@@ -1,5 +1,5 @@
 import React from "react";
-import { FiHome, FiBox, FiMapPin, FiUsers } from "react-icons/fi";
+import { FiHome, FiBox, FiMapPin, FiUsers, FiShoppingCart, FiTag } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -8,6 +8,8 @@ const Sidebar = () => {
   const menuItems = [
     { label: "Dashboard", icon: <FiHome />, path: "/admin/dashboard" },
     { label: "Productos", icon: <FiBox />, path: "/admin/productos" },
+    { label: "Categorías", icon: <FiTag />, path: "/admin/categorias" },
+    { label: "Pedidos", icon: <FiShoppingCart />, path: "/admin/pedidos" },
     { label: "Sucursales", icon: <FiMapPin />, path: "/admin/sucursales" },
     { label: "Usuarios", icon: <FiUsers />, path: "/admin/usuarios" },
   ];
@@ -21,7 +23,7 @@ const Sidebar = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`flex items-center gap-2 px-3 py-2 rounded hover:bg-purple-700 ${
+            className={`flex items-center gap-2 px-3 py-2 rounded hover:bg-purple-700 transition-colors ${
               pathname === item.path ? "bg-purple-700" : ""
             }`}
           >

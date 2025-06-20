@@ -19,6 +19,8 @@ import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import Productos from "./pages/admin/Productos";
 import SucursalesAdmin from "./pages/admin/Sucursales";
 import Usuarios from "./pages/admin/Usuarios";
+import Pedidos from "./pages/admin/Pedidos";
+import Categorias from "./pages/admin/Categorias";
 
 function RutaPrivada({ children, rolRequerido }) {
   const { usuario } = useAuth();
@@ -73,6 +75,8 @@ function App() {
             <Route path="productos" element={<Productos/>} />
             <Route path="sucursales" element={<SucursalesAdmin />} />
             <Route path="usuarios" element={<Usuarios />} />
+            <Route path="pedidos" element={<Pedidos />} />
+            <Route path="categorias" element={<Categorias />} />
           </Route>
         </Routes>
       </AuthProvider>
