@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import api from "../../../api/axiosInstance";
-import uploadImageToCloudinary from "../../../utils/uploadImageToCloudinary";
+import api from "../../../../api/axiosInstance";
+import uploadImageToCloudinary from "../../../../utils/uploadImageToCloudinary";
 import { FiUpload, FiX, FiPackage, FiDollarSign, FiTag, FiMapPin, FiImage, FiSave } from "react-icons/fi";
 
 const AddProductModal = ({ isOpen, onClose, onProductAdded, idSucursal, categorias, sucursales }) => {

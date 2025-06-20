@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Modal from "react-modal";
-import api from "../../../api/axiosInstance";
-import uploadImageToCloudinary from "../../../utils/uploadImageToCloudinary";
+import api from "../../../../api/axiosInstance";
+import uploadImageToCloudinary from "../../../../utils/uploadImageToCloudinary";
 import { FiUpload, FiX, FiPackage, FiDollarSign, FiTag, FiMapPin, FiSave, FiImage } from "react-icons/fi";
 
 const EditProductModal = ({ isOpen, onClose, producto, onProductUpdated, categorias, sucursales }) => {

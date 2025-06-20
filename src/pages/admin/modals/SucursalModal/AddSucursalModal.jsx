@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import Modal from "react-modal";
-import api from "../../../api/axiosInstance";
+import api from "../../../../api/axiosInstance";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 
 const mapContainerStyle = {

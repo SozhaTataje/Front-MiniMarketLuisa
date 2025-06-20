@@ -175,7 +175,6 @@ const Categorias = () => {
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>{categoria.productos?.length || 0} productos asociados</span>
                 <span className="text-xs text-gray-400">Categoría #{categoria.id}</span>
               </div>
 

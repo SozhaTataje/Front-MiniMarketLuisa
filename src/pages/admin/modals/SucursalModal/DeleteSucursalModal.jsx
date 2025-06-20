@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
-import api from "../../../api/axiosInstance";
+import api from "../../../../api/axiosInstance";
 import { FiAlertTriangle } from "react-icons/fi";
 
 const DeleteSucursalModal = ({ isOpen, onClose, onDeleted, sucursal }) => {
