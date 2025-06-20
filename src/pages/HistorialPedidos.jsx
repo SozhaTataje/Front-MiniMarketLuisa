@@ -11,9 +11,9 @@ const HistorialPedidos = () => {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const response = await axios.get("http://localhost:3600/pedido/all");
+        const response = await axios.get(`http://localhost:3600/pedido/${userEmail}`);
 
-         const pedidosUsuario = response.data.filter(
+        const pedidosUsuario = response.data.filter(
           (pedido) => pedido.usuario?.email === userEmail
         );
 
