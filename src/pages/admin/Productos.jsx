@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import axios from "axios";
 import {
-  FiPlus, FiTrash2, FiEdit, FiMapPin, FiPackage, FiGrid
+  FiPlus, FiTrash2, FiEdit, FiMapPin, FiPackage
 } from "react-icons/fi";
-
+import api from "../../api/axiosInstance";
 import AddProductModal from "./modals/ProductoModal/AddProductModal";
 import EditProductModal from "./modals/ProductoModal/EditProductModal";
 import DeleteProductModal from "./modals/ProductoModal/DeleteProductModal";
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
-  const [productosGenerales, setProductosGenerales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
   const [sucursales, setSucursales] = useState([]);
@@ -20,7 +18,6 @@ const Productos = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [categorias, setCategorias] = useState([]);
-  const [viewMode, setViewMode] = useState('sucursal');
 
   const PLACEHOLDER_IMG = useMemo(() =>
     `data:image/svg+xml;base64,${btoa(`
@@ -28,15 +25,14 @@ const Productos = () => {
         <rect width="100%" height="100%" fill="#f3f4f6"/>
         <text x="50%" y="50%" font-family="Arial" font-size="12" fill="#9ca3af" text-anchor="middle" dy=".3em">IMG</text>
       </svg>
-    `)}`, []
-  );
+    `)}`, []);
 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         const [sucursalesRes, categoriasRes] = await Promise.all([
-          axios.get("http://localhost:3600/sucursal/all?param=x"),
-          axios.get("http://localhost:3600/categoria/all"),
+          api.get("/sucursal/all?param=x"),
+          api.get("/categoria/all"),
         ]);
         setSucursales(sucursalesRes.data);
         setCategorias(categoriasRes.data);
@@ -55,7 +51,7 @@ const Productos = () => {
     if (!selectedSucursal) return;
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3600/productosucursal/sucursal/${selectedSucursal}`);
+      const res = await api.get(`/productosucursal/sucursal/${selectedSucursal}`);
       setProductos(res.data);
     } catch (error) {
       console.error("Error cargando productos de sucursal:", error);
@@ -65,23 +61,11 @@ const Productos = () => {
     }
   }, [selectedSucursal]);
 
-  const fetchProductosGenerales = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get("http://localhost:3600/producto/all");
-      setProductosGenerales(res.data);
-    } catch (error) {
-      console.error("Error cargando productos generales:", error);
-      setProductosGenerales([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    if (!categorias.length || !sucursales.length) return;
-    viewMode === 'sucursal' ? fetchProductosSucursal() : fetchProductosGenerales();
-  }, [viewMode, selectedSucursal, categorias.length, sucursales.length, fetchProductosSucursal, fetchProductosGenerales]);
+    if (categorias.length && sucursales.length && selectedSucursal) {
+      fetchProductosSucursal();
+    }
+  }, [categorias.length, sucursales.length, selectedSucursal, fetchProductosSucursal]);
 
   const handleEditClick = useCallback((producto) => {
     setEditingProduct(producto);
@@ -98,8 +82,8 @@ const Productos = () => {
   }, [selectedSucursal]);
 
   const refreshData = useCallback(() => {
-    viewMode === 'sucursal' ? fetchProductosSucursal() : fetchProductosGenerales();
-  }, [viewMode, fetchProductosSucursal, fetchProductosGenerales]);
+    fetchProductosSucursal();
+  }, [fetchProductosSucursal]);
 
   const getCategoriaName = useMemo(() => (idCategoria) => {
     const categoria = categorias.find(c => c.id === idCategoria);
@@ -117,8 +101,6 @@ const Productos = () => {
     return 'text-green-600 bg-green-100';
   }, []);
 
-  const currentProducts = viewMode === 'sucursal' ? productos : productosGenerales;
-
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Header */}
@@ -127,7 +109,7 @@ const Productos = () => {
           <h1 className="text-3xl font-bold text-purple-700 flex items-center gap-2">
             <FiPackage /> Gestión de Productos
           </h1>
-          <p className="text-gray-600 mt-1">{viewMode === 'sucursal' ? 'Productos por sucursal' : 'Productos generales'}</p>
+          <p className="text-gray-600 mt-1">Productos por sucursal</p>
         </div>
         <button
           onClick={() => setShowProductModal(true)}
@@ -138,41 +120,24 @@ const Productos = () => {
       </div>
 
       {/* Controles */}
-      <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('sucursal')}
-              className={`px-3 py-2 rounded ${viewMode === 'sucursal' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
+      <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex items-center gap-4 flex-wrap">
+        {sucursales.length > 0 && (
+          <div className="flex items-center gap-2">
+            <label className="font-semibold text-gray-700">Sucursal:</label>
+            <select
+              value={selectedSucursal || ""}
+              onChange={(e) => setSelectedSucursal(Number(e.target.value))}
+              className="border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-purple-500"
             >
-              <FiMapPin /> Por Sucursal
-            </button>
-            <button
-              onClick={() => setViewMode('general')}
-              className={`px-3 py-2 rounded ${viewMode === 'general' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
-            >
-              <FiGrid /> Generales
-            </button>
+              {sucursales.map(s => (
+                <option key={s.idsucursal} value={s.idsucursal}>{s.nombre} - {s.ciudad}</option>
+              ))}
+            </select>
           </div>
+        )}
 
-          {viewMode === 'sucursal' && sucursales.length > 0 && (
-            <div className="flex items-center gap-2">
-              <label className="font-semibold text-gray-700">Sucursal:</label>
-              <select
-                value={selectedSucursal || ""}
-                onChange={(e) => setSelectedSucursal(Number(e.target.value))}
-                className="border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-purple-500"
-              >
-                {sucursales.map(s => (
-                  <option key={s.idsucursal} value={s.idsucursal}>{s.nombre} - {s.ciudad}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <span className="text-xs text-gray-500">{categorias.length} categorías disponibles</span>
-          <span className="text-sm text-gray-500">{currentProducts.length} productos encontrados</span>
-        </div>
+        <span className="text-xs text-gray-500">{categorias.length} categorías disponibles</span>
+        <span className="text-sm text-gray-500">{productos.length} productos encontrados</span>
       </div>
 
       {/* Tabla */}
@@ -182,7 +147,7 @@ const Productos = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
             Cargando productos...
           </div>
-        ) : currentProducts.length === 0 ? (
+        ) : productos.length === 0 ? (
           <div className="text-center py-20">
             <FiPackage className="text-6xl text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">No hay productos</h3>
@@ -200,15 +165,15 @@ const Productos = () => {
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Producto</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Categoría</th>
-                  {viewMode === 'sucursal' && <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Stock</th>}
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Stock</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Precio</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Estado</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {currentProducts.map((p, i) => {
-                  const producto = viewMode === 'sucursal' ? p.producto : p;
+                {productos.map((p, i) => {
+                  const producto = p.producto;
                   const categoriaId = producto?.categoria?.id || producto?.idcategoria;
 
                   return (
@@ -232,13 +197,11 @@ const Productos = () => {
                           {getCategoriaName(categoriaId)}
                         </span>
                       </td>
-                      {viewMode === 'sucursal' && (
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 text-xs rounded-full ${getStockColor(p.stock)}`}>
-                            {p.stock || 0} unidades
-                          </span>
-                        </td>
-                      )}
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 text-xs rounded-full ${getStockColor(p.stock)}`}>
+                          {p.stock || 0} unidades
+                        </span>
+                      </td>
                       <td className="px-6 py-4 font-semibold">S/ {(producto?.precio || 0).toFixed(2)}</td>
                       <td className="px-6 py-4">
                         <span className={`px-2 py-1 text-xs rounded-full ${
@@ -252,11 +215,9 @@ const Productos = () => {
                           <button onClick={() => handleEditClick(p)} className="text-green-600 hover:text-green-800 p-1 hover:bg-green-100 rounded">
                             <FiEdit className="w-4 h-4" />
                           </button>
-                          {viewMode === 'sucursal' && (
-                            <button onClick={() => handleDeleteClick(p)} className="text-red-600 hover:text-red-800 p-1 hover:bg-red-100 rounded">
-                              <FiTrash2 className="w-4 h-4" />
-                            </button>
-                          )}
+                          <button onClick={() => handleDeleteClick(p)} className="text-red-600 hover:text-red-800 p-1 hover:bg-red-100 rounded">
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiTag, FiX, FiSave } from "react-icons/fi";
+import api from "../../api/axiosInstance";
 
 const Categorias = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,15 +17,11 @@ const Categorias = () => {
   const fetchCategorias = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3600/categoria/all");
+      const response = await api.get("/categoria/all");
 
-      if (!response.ok) throw new Error("Error en el servidor");
+      if (!Array.isArray(response.data)) throw new Error("La respuesta no es una lista");
 
-      const data = await response.json();
-
-      if (!Array.isArray(data)) throw new Error("La respuesta no es una lista");
-
-      setCategorias(data);
+      setCategorias(response.data);
     } catch (error) {
       console.error("Error al cargar categorías:", error);
       alert("No se pudieron cargar las categorías.");
@@ -42,26 +39,16 @@ const Categorias = () => {
     e.preventDefault();
     try {
       const url = editingCategory
-        ? `http://localhost:3600/categoria/update/${editingCategory.id}`
-        : "http://localhost:3600/categoria/save";
+        ? `/categoria/update/${editingCategory.id}`
+        : "/categoria/save";
 
-      const method = editingCategory ? "PUT" : "POST";
+      const method = editingCategory ? api.put : api.post;
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await method(url, formData);
 
-      if (response.ok) {
-        const message = await response.text();
-        alert(message);
-        await fetchCategorias();
-        resetForm();
-      } else {
-        const errorText = await response.text();
-        alert(`Error: ${errorText}`);
-      }
+      alert(response.data || "Operación exitosa");
+      await fetchCategorias();
+      resetForm();
     } catch (error) {
       console.error("Error al guardar categoría:", error);
       alert("Error al guardar la categoría");
@@ -77,18 +64,12 @@ const Categorias = () => {
   const handleDelete = async (id) => {
     if (window.confirm("¿Estás seguro de que deseas eliminar esta categoría?")) {
       try {
-        const response = await fetch(`http://localhost:3600/categoria?idcategoria=${id}`, {
-          method: "DELETE",
+        const response = await api.delete(`/categoria`, {
+          params: { idcategoria: id },
         });
 
-        if (response.ok) {
-          const message = await response.text();
-          alert(message);
-          await fetchCategorias();
-        } else {
-          const errorText = await response.text();
-          alert(`Error: ${errorText}`);
-        }
+        alert(response.data || "Categoría eliminada");
+        await fetchCategorias();
       } catch (error) {
         console.error("Error al eliminar categoría:", error);
         alert("Error al eliminar la categoría");
@@ -220,7 +201,7 @@ const Categorias = () => {
         </div>
       )}
 
-      {/* Modal de formulario */}
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">

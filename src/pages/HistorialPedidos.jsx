@@ -12,12 +12,7 @@ const HistorialPedidos = () => {
     const fetchPedidos = async () => {
       try {
         const response = await axios.get(`http://localhost:3600/pedido/${userEmail}`);
-
-        const pedidosUsuario = response.data.filter(
-          (pedido) => pedido.usuario?.email === userEmail
-        );
-
-        setPedidos(pedidosUsuario);
+        setPedidos(response.data); // Ya vienen filtrados desde el backend
       } catch (err) {
         console.error("Error al cargar pedidos:", err);
         setError("Error al cargar pedidos");
@@ -26,11 +21,18 @@ const HistorialPedidos = () => {
       }
     };
 
-    fetchPedidos();
+    if (userEmail) {
+      fetchPedidos();
+    } else {
+      setLoading(false);
+      setError("No se ha encontrado el email del usuario.");
+    }
   }, [userEmail]);
 
   if (loading)
-    return <p className="text-center mt-10 text-lg text-blue-600">Cargando pedidos...</p>;
+    return (
+      <p className="text-center mt-10 text-lg text-blue-600">Cargando pedidos...</p>
+    );
 
   if (error)
     return <p className="text-center mt-10 text-red-500">{error}</p>;
@@ -57,19 +59,24 @@ const HistorialPedidos = () => {
             <div className="mb-4">
               <p className="text-sm text-gray-500">
                 Pedido #{pedido.idpedido} |{" "}
-                {new Date(pedido.fecha).toLocaleString()}
+                {pedido.fechapedido
+                  ? new Date(pedido.fechapedido).toLocaleString()
+                  : "Sin fecha"}
               </p>
               <p className="text-sm text-gray-700 font-semibold">
-                Estado: {pedido.estado}
+                Estado:{" "}
+                <span className="uppercase">
+                  {pedido.estado || "No definido"}
+                </span>
               </p>
               <p className="text-sm text-gray-700">
-                Dirección: {pedido.direccion}
+                Dirección: {pedido.direccion || "No especificada"}
               </p>
               <p className="text-sm text-gray-700">
-                Teléfono: {pedido.telefono}
+                Teléfono: {pedido.telefono || "Sin número"}
               </p>
               <p className="text-sm text-gray-700">
-                Correo: {pedido.usuario?.email}
+                Correo: {pedido.email || "Sin correo"}
               </p>
             </div>
 
@@ -83,11 +90,11 @@ const HistorialPedidos = () => {
                   >
                     <p className="text-sm text-gray-800">
                       <span className="font-medium">
-                        {pp.productoSucursal?.producto?.nombre}
+                        {pp.productoSucursal?.producto?.nombre || "Producto"}
                       </span>{" "}
                       — Cantidad: {pp.cantidad} — Subtotal:{" "}
                       <span className="font-semibold text-green-600">
-                        S/ {pp.subtotal.toFixed(2)}
+                        S/ {pp.subtotal?.toFixed(2) || "0.00"}
                       </span>
                     </p>
                   </li>
