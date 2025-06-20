@@ -24,7 +24,7 @@ const AddSucursalModal = ({ isOpen, onClose, onAdded }) => {
   });
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyBI58DtAF-zwB33Bw_bZwHC8RsgQKFSwjw", 
+    googleMapsApiKey: "AIzaSyBgGNXF0P28UyZUTKfcrQu3UKZfWUEpMEU", 
   });
 
   const handleChange = (e) => {

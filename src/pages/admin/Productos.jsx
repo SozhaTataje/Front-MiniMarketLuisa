@@ -25,22 +25,24 @@ const Productos = () => {
       .catch((e) => console.error("Error cargando sucursales:", e));
   }, []);
 
-  const fetchProductos = () => {
-    if (!selectedSucursal) return;
-    setLoading(true);
-    axios
-      .get(`http://localhost:3600/productosucursal/sucursal/${selectedSucursal}`)
-      .then((res) => {
-        console.log("Productos recargados:", res.data);
-        setProductos(res.data);
-      })
-      .catch((e) => console.error("Error cargando productos:", e))
-      .finally(() => setLoading(false));
-  };
+
 
   useEffect(() => {
+      const fetchProductos = () => {
+        if (!selectedSucursal) return;
+        setLoading(true);
+        axios
+          .get(`http://localhost:3600/productosucursal/sucursal/${selectedSucursal}`)
+          .then((res) => {
+            console.log("Productos recargados:", res.data);
+            setProductos(res.data);
+          })
+          .catch((e) => console.error("Error cargando productos:", e))
+          .finally(() => setLoading(false));
+      };
+
     fetchProductos();
-  }, [selectedSucursal]);
+    }, [selectedSucursal]);
 
   const handleEditClick = (productoSucursal) => {
     if (!productoSucursal.sucursal) {
@@ -52,7 +54,7 @@ const Productos = () => {
 
 
 
- 
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -103,9 +105,8 @@ const Productos = () => {
                   productos.map((p, i) => (
                     <tr
                       key={p.idProductoSucursal ?? i}
-                      className={`border-b hover:bg-purple-50 ${
-                        i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      }`}
+                      className={`border-b hover:bg-purple-50 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        }`}
                     >
                       <td className="px-4 py-2">{p.producto?.idproducto}</td>
                       <td className="px-4 py-2">{p.producto?.nombre}</td>
@@ -119,7 +120,7 @@ const Productos = () => {
                         >
                           <FiEdit /> <span>Editar</span>
                         </button>
-                        
+
                       </td>
                     </tr>
                   ))
@@ -141,7 +142,7 @@ const Productos = () => {
         onClose={() => setShowProductModal(false)}
         onProductAdded={() => {
           setShowProductModal(false);
-          fetchProductos();
+          selectedSucursal.fetchProductos();
         }}
         idSucursal={selectedSucursal}
       />
@@ -157,7 +158,7 @@ const Productos = () => {
           onProductUpdated={() => {
             setShowEditModal(false);
             setEditingProduct(null);
-            fetchProductos();
+           selectedSucursal.fetchProductos();
           }}
         />
       )}
