@@ -1,86 +1,125 @@
-import React, { useState } from "react";
-import { XCircle, Loader2 } from "lucide-react";
-import api from "../../../../api/axiosInstance";
+import React, { useState } from 'react';
+import { FiTrash2, FiX, FiMapPin } from 'react-icons/fi';
+import api from '../../../../api/axiosInstance';
 
 const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucursalName }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState('');
 
-  if (!isOpen || !producto) return null;
+  const eliminarSoloDeSucursal = async () => {
+    const idProducto = producto?.producto?.idproducto;
+    const idSucursal = producto?.sucursal?.idsucursal || producto?.idsucursal;
 
-  const handleDelete = async () => {
-    setLoading(true);
-    setError("");
+    if (!idProducto || !idSucursal) {
+      setError('❌ Error: faltan IDs');
+      return;
+    }
+
+    setIsDeleting(true);
+    setError('');
 
     try {
-      const idproducto = producto.producto?.idproducto || producto.idproducto;
-      const idsucursal = producto.idsucursal || producto.sucursal?.idsucursal;
-
-      const response = await api.delete(`/productosucursal/eliminar`, {
-        params: { idproducto, idsucursal }
-      });
-
-      if (response.status === 200) {
-        alert("✅ Producto eliminado correctamente de la sucursal.");
-        onProductDeleted(); // recarga
-        onClose();          // cierra modal
-      } else {
-        setError("Error inesperado. Código: " + response.status);
-      }
+      await api.delete(`/productosucursal/eliminar?idProducto=${idProducto}&idSucursal=${idSucursal}`);
+      alert('✅ Producto eliminado de la sucursal');
+      onProductDeleted(); // actualiza vista
+      onClose(); // cierra modal
     } catch (err) {
-      console.error("Error al eliminar producto:", err);
-      if (err.response?.status === 403) {
-        setError("🚫 No tienes permisos para eliminar este producto.");
-      } else {
-        setError("❌ Ocurrió un error al eliminar el producto.");
-      }
+      console.error(err);
+      setError(err.response?.data || 'Error al eliminar de sucursal');
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
     }
   };
 
+  const eliminarCompletamente = async () => {
+    const idProducto = producto?.producto?.idproducto;
+
+    if (!idProducto) {
+      setError('❌ ID de producto inválido');
+      return;
+    }
+
+    setIsDeleting(true);
+    setError('');
+
+    try {
+      await api.delete(`/producto/delete/${idProducto}`);
+      alert('✅ Producto eliminado del sistema');
+      onProductDeleted(); // actualiza vista
+      onClose(); // cierra modal
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data || 'Error al eliminar producto';
+      setError(msg);
+
+      if (err.response?.status === 400) {
+        alert(`❌ No se puede eliminar:\n\n${msg}\n\n👉 Primero elimina de todas las sucursales.`);
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
         {/* Encabezado */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold text-red-600">Eliminar Producto</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <XCircle className="w-6 h-6" />
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-lg font-bold text-red-600 flex items-center gap-2">
+            <FiTrash2 /> Eliminar Producto
+          </h2>
+          <button onClick={onClose} disabled={isDeleting}>
+            <FiX className="text-gray-500" />
           </button>
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-100 text-red-700 text-sm p-3 rounded mb-4">
-            {error}
+        {/* Cuerpo */}
+        <div className="p-4 space-y-4">
+          <p className="text-gray-800">
+            ¿Qué acción deseas realizar con <strong>{producto?.producto?.nombre}</strong>?
+          </p>
+
+          {sucursalName && (
+            <div className="text-sm text-gray-500 flex items-center gap-2">
+              <FiMapPin className="text-gray-400" />
+              <span>{sucursalName}</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-red-600 bg-red-100 rounded-lg p-2 text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Botones */}
+          <div className="space-y-2">
+            <button
+              onClick={eliminarSoloDeSucursal}
+              disabled={isDeleting}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded"
+            >
+              {isDeleting ? 'Eliminando de sucursal...' : `Eliminar de "${sucursalName}"`}
+            </button>
+
+            <button
+              onClick={eliminarCompletamente}
+              disabled={isDeleting}
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded"
+            >
+              {isDeleting ? 'Eliminando del sistema...' : 'Eliminar del sistema'}
+            </button>
+
+            <button
+              onClick={onClose}
+              disabled={isDeleting}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded"
+            >
+              Cancelar
+            </button>
           </div>
-        )}
-
-        {/* Mensaje */}
-        <p className="text-gray-700 mb-4">
-          ¿Estás seguro de que deseas eliminar el producto{" "}
-          <strong>{producto?.producto?.nombre || producto?.nombre}</strong> de la sucursal{" "}
-          <strong>{sucursalName}</strong>?
-        </p>
-
-        {/* Botones */}
-        <div className="flex justify-end gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100"
-            disabled={loading}
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={loading}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center gap-2 disabled:opacity-50"
-          >
-            {loading && <Loader2 className="animate-spin w-4 h-4" />}
-            Eliminar
-          </button>
         </div>
       </div>
     </div>
