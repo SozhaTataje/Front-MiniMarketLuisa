@@ -19,7 +19,7 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
     setError('');
 
     try {
-      await api.delete(`/productosucursal/eliminar?idProducto=${idProducto}&idSucursal=${idSucursal}`);
+      await api.delete(`/productosucursal/eliminar/${idProducto}/${idSucursal}`);
       alert('✅ Producto eliminado de la sucursal');
       onProductDeleted(); // actualiza vista
       onClose(); // cierra modal
