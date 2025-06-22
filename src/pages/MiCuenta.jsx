@@ -1,13 +1,15 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/axiosInstance";
+import toast from "react-hot-toast"; // ✅ TOAST IMPORTADO
 
 const MiCuenta = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [modo, setModo] = useState("login");
+
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
@@ -25,17 +27,14 @@ const MiCuenta = () => {
 
     try {
       if (modo === "login") {
-        const res = await axios.post(
-          "http://localhost:3600/api/usuario/login",
-          {
-            email: form.email,
-            password: form.password,
-          }
-        );
+        const res = await api.post("api/usuario/login", {
+          email: form.email,
+          password: form.password,
+        });
 
         const { token } = res.data;
         if (!token) {
-          alert("No se recibió token en la respuesta");
+          toast.error("No se recibió token en la respuesta");
           return;
         }
 
@@ -43,7 +42,7 @@ const MiCuenta = () => {
 
         const roles = JSON.parse(localStorage.getItem("roles")) || [];
 
-        alert("Inicio de sesión exitoso");
+        toast.success("Inicio de sesión exitoso 🎉");
 
         if (roles.includes("ROLE_ADMIN")) {
           navigate("/admin/dashboard");
@@ -51,8 +50,8 @@ const MiCuenta = () => {
           navigate("/productos");
         }
       } else {
-        await axios.post("http://localhost:3600/api/usuario/signup", form);
-        alert("Registro exitoso. Ahora inicia sesión.");
+        await api.post("api/usuario/signup", form);
+        toast.success("Registro exitoso. Ahora inicia sesión ✅");
         navigate("/mi-cuenta", { state: { modo: "login" } });
       }
     } catch (error) {
@@ -60,12 +59,11 @@ const MiCuenta = () => {
         error.response?.status === 403 &&
         error.response?.data?.includes("no se ha verificado")
       ) {
-        alert("Usuario no verificado. Por favor confirma tu correo.");
+        toast.error("Usuario no verificado. Revisa tu correo 📧");
         navigate("/confirmar-correo", { state: { email: form.email } });
       } else {
-        alert(
-          "Error: " +
-            (error.response?.data || error.message || "Servidor no disponible")
+        toast.error(
+          error.response?.data || error.message || "Servidor no disponible"
         );
       }
     }
@@ -104,7 +102,7 @@ const MiCuenta = () => {
                 type="text"
                 name="nombre"
                 placeholder="Nombre"
-                className="w-full border p-2 rounded"
+                className="w-full border border-gray-300 p-2 rounded"
                 value={form.nombre}
                 onChange={handleChange}
                 required
@@ -113,7 +111,7 @@ const MiCuenta = () => {
                 type="text"
                 name="apellido"
                 placeholder="Apellido"
-                className="w-full border p-2 rounded"
+                className="w-full border border-gray-300 p-2 rounded"
                 value={form.apellido}
                 onChange={handleChange}
                 required
@@ -122,7 +120,7 @@ const MiCuenta = () => {
                 type="text"
                 name="telefono"
                 placeholder="Teléfono"
-                className="w-full border p-2 rounded"
+                className="w-full border border-gray-300 p-2 rounded"
                 value={form.telefono}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -139,7 +137,7 @@ const MiCuenta = () => {
             type="email"
             name="email"
             placeholder="Correo electrónico"
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
             value={form.email}
             onChange={handleChange}
             required
@@ -148,7 +146,7 @@ const MiCuenta = () => {
             type="password"
             name="password"
             placeholder="Contraseña"
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
             value={form.password}
             onChange={handleChange}
             required
@@ -156,7 +154,7 @@ const MiCuenta = () => {
 
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+            className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
           >
             {modo === "login" ? "Iniciar Sesión" : "Registrarse"}
           </button>

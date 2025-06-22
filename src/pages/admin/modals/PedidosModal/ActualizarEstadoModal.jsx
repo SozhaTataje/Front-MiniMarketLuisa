@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 import { XCircle, Loader2 } from "lucide-react";
 import api from "../../../../api/axiosInstance";
+import { toast } from "react-hot-toast";
 
 const ActualizarEstadoModal = ({
   pedido,
@@ -9,28 +11,33 @@ const ActualizarEstadoModal = ({
   ESTADOS,
   TRANSICIONES_VALIDAS,
 }) => {
-  const [nuevoEstado, setNuevoEstado] = useState("");
-  const [actualizandoEstado, setActualizandoEstado] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm({
+    defaultValues: {
+      nuevoEstado: "",
+    },
+  });
 
-  const actualizarEstado = async (idPedido, nuevoEstado) => {
+  const nuevoEstadoSeleccionado = watch("nuevoEstado");
+
+  const onSubmit = async ({ nuevoEstado }) => {
     try {
-      setActualizandoEstado(true);
-      setError("");
-
-      await api.put(`/pedido/update/${idPedido}`, {
+      await api.put(`/pedido/update/${pedido.idpedido}`, {
         estado: nuevoEstado,
       });
-
       await cargarPedidos();
       onClose();
-      alert(`Pedido actualizado exitosamente a: ${ESTADOS[nuevoEstado]?.label || nuevoEstado}`);
+      toast.success(`Pedido actualizado a: ${ESTADOS[nuevoEstado]?.label || nuevoEstado}`);
     } catch (error) {
       console.error("Error al actualizar pedido:", error);
       const mensaje = error.response?.data || error.message;
-      setError("Error al actualizar el pedido: " + mensaje);
-    } finally {
-      setActualizandoEstado(false);
+      setError("root", { message: mensaje });
+      toast.error("Error al actualizar el pedido");
     }
   };
 
@@ -44,13 +51,13 @@ const ActualizarEstadoModal = ({
           </button>
         </div>
 
-        {error && (
+        {errors.root && (
           <div className="bg-red-100 text-red-800 text-sm p-3 rounded mb-4">
-            {error}
+            {errors.root.message}
           </div>
         )}
 
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-600">
               Estado actual:
@@ -65,8 +72,7 @@ const ActualizarEstadoModal = ({
               Nuevo estado:
             </label>
             <select
-              value={nuevoEstado}
-              onChange={(e) => setNuevoEstado(e.target.value)}
+              {...register("nuevoEstado", { required: "Debe seleccionar un estado" })}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
             >
               <option value="">Seleccionar estado...</option>
@@ -76,32 +82,36 @@ const ActualizarEstadoModal = ({
                 </option>
               ))}
             </select>
+            {errors.nuevoEstado && (
+              <p className="text-red-500 text-sm mt-1">{errors.nuevoEstado.message}</p>
+            )}
           </div>
 
-          {nuevoEstado && ESTADOS[nuevoEstado]?.descripcion && (
+          {nuevoEstadoSeleccionado && ESTADOS[nuevoEstadoSeleccionado]?.descripcion && (
             <div className="bg-purple-50 text-purple-800 text-sm p-3 rounded">
-              <strong>Descripción:</strong> {ESTADOS[nuevoEstado].descripcion}
+              <strong>Descripción:</strong> {ESTADOS[nuevoEstadoSeleccionado].descripcion}
             </div>
           )}
-        </div>
 
-        <div className="flex justify-end gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            disabled={actualizandoEstado}
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={() => actualizarEstado(pedido.idpedido, nuevoEstado)}
-            disabled={!nuevoEstado || actualizandoEstado}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 flex items-center"
-          >
-            {actualizandoEstado && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-            Actualizar
-          </button>
-        </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 flex items-center"
+            >
+              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Actualizar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

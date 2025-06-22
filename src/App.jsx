@@ -1,19 +1,25 @@
-import {BrowserRouter,Routes,Route, Navigate, Outlet, useLocation, } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 import Navbar from "./components/Navbar";
 import AdminLayout from "./layouts/AdminLayout";
 
-
 import Home from "./pages/Home";
-import ProductList from "./pages/ProductList"; 
+import ProductList from "./pages/ProductList";
 import Carrito from "./pages/Carrito";
 import Sucursales from "./pages/Sucursales";
 import MiCuenta from "./pages/MiCuenta";
 import ConfirmarCorreo from "./pages/ConfirmarCorreo";
 import PedidoConfirmacion from "./pages/PedidoConfirmacion";
 import HistorialPedidos from "./pages/HistorialPedidos";
-
 
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import Productos from "./pages/admin/Productos";
@@ -27,7 +33,7 @@ function RutaPrivada({ children, rolRequerido }) {
 
   if (!usuario) return <Navigate to="/mi-cuenta" />;
 
-  const roles = Array.isArray(usuario.roles)  ? usuario.roles : usuario.rol ? [usuario.rol] : [];
+  const roles = Array.isArray(usuario.roles) ? usuario.roles : usuario.rol ? [usuario.rol] : [];
 
   if (rolRequerido && !roles.includes(rolRequerido)) return <Navigate to="/" />;
 
@@ -37,6 +43,7 @@ function RutaPrivada({ children, rolRequerido }) {
 function ClienteLayout() {
   const location = useLocation();
   const esRutaAdmin = location.pathname.startsWith("/admin");
+
   return (
     <>
       {!esRutaAdmin && <Navbar />}
@@ -49,10 +56,12 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Toaster position="top-right" reverseOrder={false} />
+        
         <Routes>
           <Route element={<ClienteLayout />}>
             <Route path="/" element={<Home />} />
-             <Route path="/productos" element={<ProductList />} />
+            <Route path="/productos" element={<ProductList />} />
             <Route path="/carrito" element={<Carrito />} />
             <Route path="/sucursales" element={<Sucursales />} />
             <Route path="/mi-cuenta" element={<MiCuenta />} />
@@ -61,10 +70,9 @@ function App() {
             <Route path="/mis-pedidos" element={<HistorialPedidos />} />
           </Route>
 
-
           <Route
             path="/admin"
-            element={ 
+            element={
               <RutaPrivada rolRequerido="ROLE_ADMIN">
                 <AdminLayout />
               </RutaPrivada>
@@ -72,7 +80,7 @@ function App() {
           >
             <Route index element={<DashboardAdmin />} />
             <Route path="dashboard" element={<DashboardAdmin />} />
-            <Route path="productos" element={<Productos/>} />
+            <Route path="productos" element={<Productos />} />
             <Route path="sucursales" element={<SucursalesAdmin />} />
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="pedidos" element={<Pedidos />} />

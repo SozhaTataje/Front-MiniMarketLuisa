@@ -69,7 +69,7 @@ const ProductCard = ({ productosucursal }) => {
       </p>
 
       <div className="mt-auto flex items-center gap-3 pt-4">
-        <div className="flex items-center border rounded-md overflow-hidden w-max">
+        <div className="flex items-center border border-gray-200 rounded-md overflow-hidden w-max">
           <button
             onClick={disminuir}
             className="px-3 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
