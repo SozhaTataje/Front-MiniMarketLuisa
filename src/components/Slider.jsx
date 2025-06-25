@@ -35,7 +35,6 @@ const Slider = () => {
         </Link>
       </div>
 
-      {/* Botones de slider */}
       <button
         onClick={prev}
         className="absolute left-6 top-1/2 -translate-y-1/4 bg-white bg-opacity-10 hover:bg-opacity-70 text-black rounded-full w-12 h-12 flex justify-center items-center text-3xl shadow-md transition z-30"

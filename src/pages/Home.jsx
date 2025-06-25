@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axiosInstance";
 import Slider from "../components/Slider";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
@@ -11,27 +11,38 @@ const Home = () => {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:3600/sucursal/all?param=x")
-      .then((res) => {
+   useEffect(() => {
+    const fetchSucursales = async () => {
+      try {
+        const res = await api.get("/sucursal/all?param=x")
         setSucursales(res.data);
-        if (res.data.length > 0) setSucursalId(res.data[0].idsucursal);
-      })
-      .catch((e) => console.error("Error cargando sucursales:", e));
+        if (res.data.length > 0) {
+          setSucursalId(res.data[0].idsucursal);
+        }
+      } catch (e) {
+        console.error("Error cargando sucursales:", e);
+      }
+    };
+
+    fetchSucursales();
   }, []);
 
-  useEffect(() => {
+    useEffect(() => {
     if (!sucursalId) return;
 
-    setCargando(true);
-    axios
-      .get(`http://localhost:3600/productosucursal/sucursal/${sucursalId}`)
-      .then((res) => {
-        setProductos(res.data.slice(0, 6));
-      })
-      .catch((e) => console.error("Error cargando productos:", e))
-      .finally(() => setCargando(false));
+    const fetchProductos = async () => {
+      setCargando(true);
+      try {
+        const res = await api.get(`/productosucursal/sucursal/${sucursalId}`)
+        setProductos(res.data.slice(0, 6)); 
+      } catch (e) {
+        console.error("Error cargando productos:", e);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    fetchProductos();
   }, [sucursalId]);
 
   return (
@@ -43,7 +54,6 @@ const Home = () => {
           Productos Destacados
         </h2>
 
-        {/* Selector de sucursal */}
         <div className="mb-8 flex justify-center">
           <select
             value={sucursalId}
@@ -74,10 +84,11 @@ const Home = () => {
             ))}
           </div>
         )}
+
         <div className="mt-12 flex justify-center">
           <Link
             to="/productos"
-             className="bg-purple-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-purple-700 transition"
+            className="bg-purple-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-purple-700 transition"
           >
             Ver todos los productos
           </Link>

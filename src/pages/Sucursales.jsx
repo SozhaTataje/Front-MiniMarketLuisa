@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
-import api from "../api/axiosInstance"; // 👈 tu instancia de Axios personalizada
+import api from "../api/axiosInstance";
 import Footer from "../components/Footer";
-import {
-  MapPinIcon,
-  XMarkIcon,
-  ClockIcon,
-  BuildingStorefrontIcon,
-  GlobeAltIcon,
-} from "@heroicons/react/24/solid";
+import {MapPinIcon, XMarkIcon, ClockIcon, BuildingStorefrontIcon, GlobeAltIcon} from "@heroicons/react/24/solid";
 
 function Sucursales() {
   const [sucursales, setSucursales] = useState([]);

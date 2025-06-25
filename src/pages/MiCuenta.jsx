@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axiosInstance";
-import toast from "react-hot-toast"; // ✅ TOAST IMPORTADO
+import toast from "react-hot-toast"; 
 
 const MiCuenta = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const MiCuenta = () => {
         }
       } else {
         await api.post("api/usuario/signup", form);
-        toast.success("Registro exitoso. Ahora inicia sesión ✅");
+        toast.success("Registro exitoso. Ahora inicia sesión");
         navigate("/mi-cuenta", { state: { modo: "login" } });
       }
     } catch (error) {

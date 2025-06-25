@@ -42,7 +42,6 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-md">
       <nav className="p-5 max-w-screen-xl mx-auto flex justify-between items-center relative">
-        {/* Logo */}
         <Link
           to="/"
           className="text-3xl font-bold text-purple-600 hover:scale-105 transition-transform duration-300"
@@ -51,7 +50,6 @@ const Navbar = () => {
           <span className="text-orange-500">Luisa</span>
         </Link>
 
-        {/* Botón menú móvil */}
         <button
           className="md:hidden text-3xl text-gray-700"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -59,10 +57,8 @@ const Navbar = () => {
           {menuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* Menú y buscador */}
         <div className={`absolute md:static top-20 left-0 w-full md:w-auto bg-white md:bg-transparent z-50 transition-all duration-300 shadow-md md:shadow-none rounded-b-xl ${menuOpen ? "block" : "hidden"} md:flex md:items-center md:gap-6`}>
           
-          {/* Buscador */}
           <form
             onSubmit={handleSearch}
             className="mx-4 my-4 md:my-0 md:mx-0 w-[95%] md:w-96"
@@ -84,7 +80,6 @@ const Navbar = () => {
             </div>
           </form>
 
-          {/* Enlaces */}
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6 px-4 md:px-0 pb-4 md:pb-0 text-lg">
             <Link to="/" onClick={() => setMenuOpen(false)} className="hover:text-purple-600 font-medium">
               Inicio
@@ -160,7 +155,6 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Carrito */}
             <Link
               to="/carrito"
               onClick={() => setMenuOpen(false)}

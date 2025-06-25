@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  FiSearch, FiInfo, FiEdit, FiTrash2, FiRefreshCw
-} from "react-icons/fi";
-import {
-  Clock, CreditCard, ChefHat, CheckCircle, Truck, XCircle
-} from "lucide-react";
-
+import {FiInfo, FiEdit, FiTrash2, FiRefreshCw} from "react-icons/fi";
+import {Clock, CreditCard, ChefHat, CheckCircle, Truck, XCircle} from "lucide-react";
+import { useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
 import api from "../../api/axiosInstance"; 
-
 import DetallePedidoModal from "./modals/PedidosModal/DetallePedidoModal";
 import EliminarPedidoModal from "./modals/PedidosModal/EliminarPedidoModal";
 import ActualizarEstadoModal from "./modals/PedidosModal/ActualizarEstadoModal";
@@ -15,9 +11,6 @@ import ActualizarEstadoModal from "./modals/PedidosModal/ActualizarEstadoModal";
 const Pedidos = () => {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterSucursal, setFilterSucursal] = useState("");
-  const [filterEstado, setFilterEstado] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const pedidosPorPagina = 10;
 
@@ -25,6 +18,11 @@ const Pedidos = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEstadoModal, setShowEstadoModal] = useState(false);
+
+  const { register, watch } = useForm();
+  const searchTerm = watch("search") || "";
+  const filterSucursal = watch("sucursal") || "";
+  const filterEstado = watch("estado") || "";
 
   const ESTADOS = {
     PENDIENTE: { label: "Pendiente", icon: Clock, color: "text-yellow-600 bg-yellow-100", descripcion: "Esperando pago del cliente" },
@@ -51,8 +49,10 @@ const Pedidos = () => {
     try {
       const { data } = await api.get("/pedido/all");
       setPedidos(data);
+      toast.success("Pedidos cargados correctamente");
     } catch (error) {
       console.error("Error al cargar pedidos:", error);
+      toast.error("Error al cargar pedidos");
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ const Pedidos = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
+      <Toaster position="top-right" />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold text-purple-700">Gestión de Pedidos</h1>
@@ -123,7 +123,6 @@ const Pedidos = () => {
         </button>
       </div>
 
-      {/* Estadísticas */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-6 mb-8">
         {Object.entries(ESTADOS).map(([estadoKey, config]) => {
           const Icon = config.icon;
@@ -139,19 +138,16 @@ const Pedidos = () => {
         })}
       </div>
 
-      {/* Filtros */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <form className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <input
           type="text"
           placeholder="Buscar por cliente o ID"
           className="px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          {...register("search")}
         />
         <select
           className="px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
-          value={filterSucursal}
-          onChange={(e) => setFilterSucursal(e.target.value)}
+          {...register("sucursal")}
         >
           <option value="">Todas las Sucursales</option>
           {[...new Set(
@@ -164,17 +160,15 @@ const Pedidos = () => {
         </select>
         <select
           className="px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
-          value={filterEstado}
-          onChange={(e) => setFilterEstado(e.target.value)}
+          {...register("estado")}
         >
           <option value="">Todos los Estados</option>
           {Object.keys(ESTADOS).map((estado) => (
             <option key={estado} value={estado}>{estado}</option>
           ))}
         </select>
-      </div>
+      </form>
 
-      {/* Tabla */}
       <div className="bg-white shadow-lg rounded-xl overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-purple-100">
@@ -232,7 +226,7 @@ const Pedidos = () => {
         </table>
       </div>
 
-      {/* Paginación */}
+
       {totalPaginas > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
           {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
@@ -249,7 +243,7 @@ const Pedidos = () => {
         </div>
       )}
 
-      {/* Modales */}
+
       {showDetailModal && selectedPedido && (
         <DetallePedidoModal pedido={selectedPedido} onClose={() => setShowDetailModal(false)} />
       )}

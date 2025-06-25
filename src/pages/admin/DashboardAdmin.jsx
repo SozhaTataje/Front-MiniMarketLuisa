@@ -2,40 +2,11 @@ import React, { useEffect, useState, useContext } from "react";
 import api from "../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-
-import {
-  FiBox, FiClipboard, FiLogOut, FiArrowLeft, FiUsers,
-  FiMapPin, FiTrendingUp, FiShoppingBag
-} from "react-icons/fi";
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  LineElement,
-  PointElement,
-  Filler
-} from "chart.js";
-
+import toast, { Toaster } from "react-hot-toast";
+import {  FiBox, FiClipboard, FiLogOut, FiArrowLeft, FiUsers, FiMapPin, FiTrendingUp, FiShoppingBag} from "react-icons/fi";
+import {Chart as ChartJS,CategoryScale,LinearScale,BarElement,Title,Tooltip,Legend,ArcElement,LineElement,PointElement,Filler} from "chart.js";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+ChartJS.register(CategoryScale,LinearScale,BarElement,ArcElement,LineElement,PointElement,Title,Tooltip,Legend,Filler);
 
 const DashboardAdmin = () => {
   const [productos, setProductos] = useState([]);
@@ -53,6 +24,7 @@ const DashboardAdmin = () => {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
+  
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -73,6 +45,7 @@ const DashboardAdmin = () => {
       calcularEstadisticas(resPedidos.data, resProductos.data);
     } catch (error) {
       console.error("Error al cargar datos:", error);
+      toast.error("Error al cargar los datos del dashboard");
     } finally {
       setLoading(false);
     }
@@ -99,6 +72,7 @@ const DashboardAdmin = () => {
   };
 
   const handleBackToHome = () => navigate("/");
+
 
   const barData = {
     labels: ["Productos", "Pedidos", "Usuarios", "Sucursales"],
@@ -205,6 +179,7 @@ const DashboardAdmin = () => {
 
   return (
     <div className="min-h-screen bg-white text-black">
+      <Toaster position="top-right" />
       <div className="bg-white shadow-sm px-6 py-4 border-b border-gray-200">
         <div className="flex justify-between items-center">
           <button onClick={handleBackToHome} className="flex items-center gap-2 text-purple-700 hover:text-purple-900 font-medium">
@@ -221,6 +196,8 @@ const DashboardAdmin = () => {
       </div>
 
       <div className="p-6">
+      
+        {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard label="Ventas Hoy" value={stats.ventasHoy} icon={<FiTrendingUp />} bgColor="bg-green-50" textColor="text-green-700" />
           <StatCard label="Pedidos Pendientes" value={stats.pedidosPendientes} icon={<FiClipboard />} bgColor="bg-orange-50" textColor="text-orange-700" />

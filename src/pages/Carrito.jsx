@@ -1,13 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import api from "../api/axiosInstance";
 import { CartContext } from "../context/CartContext";
-import {
-  FaShoppingCart,
-  FaStore,
-  FaTrash,
-  FaPlus,
-  FaMinus,
-} from "react-icons/fa";
+import {FaShoppingCart, FaStore, FaTrash, FaPlus, FaMinus,} from "react-icons/fa";
 import ModalUsuario from "../components/ModalUsuario";
 
 const Carrito = () => {
@@ -173,7 +167,6 @@ const Carrito = () => {
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              {/* Sucursales */}
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
                   <FaStore className="text-purple-600" />
@@ -199,7 +192,6 @@ const Carrito = () => {
                 </div>
               </div>
 
-              {/* Lista de productos */}
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {carrito.map((item) => {
                   const disponible =
@@ -258,7 +250,6 @@ const Carrito = () => {
               </div>
             </div>
 
-            {/* Resumen */}
             <div className="bg-white rounded-xl p-6 shadow-lg h-fit">
               <h3 className="text-xl font-bold mb-4">Resumen</h3>
               <div className="space-y-2 mb-6">

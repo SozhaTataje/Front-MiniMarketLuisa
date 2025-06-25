@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import {
-  FiPlus, FiTrash2, FiEdit, FiMapPin, FiPackage
-} from "react-icons/fi";
+import {  FiPlus, FiTrash2, FiEdit, FiPackage} from "react-icons/fi";
+import toast from "react-hot-toast";
 import api from "../../api/axiosInstance";
 import AddProductModal from "./modals/ProductoModal/AddProductModal";
 import EditProductModal from "./modals/ProductoModal/EditProductModal";
@@ -41,7 +40,7 @@ const Productos = () => {
         }
       } catch (error) {
         console.error("Error cargando datos:", error);
-        alert("Error al cargar sucursales y categorías");
+        toast.error("Error al cargar sucursales o categorías");
       }
     };
     loadInitialData();
@@ -56,6 +55,7 @@ const Productos = () => {
     } catch (error) {
       console.error("Error cargando productos de sucursal:", error);
       setProductos([]);
+      toast.error("Error al cargar productos de la sucursal");
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,6 @@ const Productos = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-purple-700 flex items-center gap-2">
@@ -119,7 +118,6 @@ const Productos = () => {
         </button>
       </div>
 
-      {/* Controles */}
       <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex items-center gap-4 flex-wrap">
         {sucursales.length > 0 && (
           <div className="flex items-center gap-2">
@@ -140,7 +138,6 @@ const Productos = () => {
         <span className="text-sm text-gray-500">{productos.length} productos encontrados</span>
       </div>
 
-      {/* Tabla */}
       <div className="bg-white shadow-lg rounded-xl overflow-hidden">
         {loading ? (
           <div className="text-center py-20">
@@ -229,11 +226,11 @@ const Productos = () => {
         )}
       </div>
 
-      {/* Modales */}
       <AddProductModal
         isOpen={showProductModal}
         onClose={() => setShowProductModal(false)}
         onProductAdded={() => {
+          toast.success("Producto agregado con éxito");
           setShowProductModal(false);
           refreshData();
         }}
@@ -251,6 +248,7 @@ const Productos = () => {
           }}
           producto={editingProduct}
           onProductUpdated={() => {
+            toast.success("Producto actualizado correctamente");
             setShowEditModal(false);
             setEditingProduct(null);
             refreshData();
@@ -269,6 +267,7 @@ const Productos = () => {
           }}
           producto={deletingProduct}
           onProductDeleted={() => {
+            toast.success("Producto eliminado correctamente");
             setShowDeleteModal(false);
             setDeletingProduct(null);
             refreshData();

@@ -1,4 +1,3 @@
-// src/pages/modals/PedidosModal/DetallePedidoModal.jsx
 import React from "react";
 import { FiX, FiUser, FiMail, FiPhone, FiCalendar, FiPackage } from "react-icons/fi";
 

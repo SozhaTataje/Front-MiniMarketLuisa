@@ -1,146 +1,162 @@
 import React from "react";
+import { useForm } from "react-hook-form";
 
-const ModalUsuario = ({ userData, setUserData, errors, setErrors, setShowUserForm, validarCampos, handleFinalizar }) => {
-  const inputClass = (campo) =>
-    `w-full border px-4 py-3 rounded-xl transition-all ${
-      errors[campo] ? "border-red-500 focus:ring-red-300" : "border-gray-300 focus:ring-purple-500"
-    }`;
+const ModalUsuario = ({ setShowUserForm, handleFinalizar }) => {
+  const {register,handleSubmit,formState: { errors },watch,} = useForm();
+
+  const onSubmit = (data) => {
+    setShowUserForm(false);
+    handleFinalizar(data);
+  };
+
+  const fechaMinima = new Date(Date.now() + 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 16);
+
+  const fechaSeleccionada = watch("fechaEntrega");
+  const horaSeleccionada = new Date(fechaSeleccionada || "").getHours();
+  const horaInvalida = horaSeleccionada < 9 || horaSeleccionada >= 18;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-8 w-full max-w-xl shadow-2xl animate-fadeIn">
-        <h2 className="text-xl font-bold text-purple-700 mb-6 text-center">Datos del Pedido</h2>
+        <h2 className="text-xl font-bold text-purple-700 mb-6 text-center">
+          Datos del Pedido
+        </h2>
 
-        {/* Nombre y Apellido */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {["nombre", "apellido"].map((campo) => (
-            <div key={campo}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
               <input
                 type="text"
-                placeholder={campo.charAt(0).toUpperCase() + campo.slice(1)}
-                className={inputClass(campo)}
-                value={userData[campo]}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setUserData((prev) => ({ ...prev, [campo]: value }));
-                  setErrors((prev) => ({ ...prev, [campo]: !value.trim() }));
-                }}
+                placeholder="Nombre"
+                className={`w-full border px-4 py-3 rounded-xl ${
+                  errors.nombre ? "border-red-500" : "border-gray-300"
+                }`}
+                {...register("nombre", { required: true })}
               />
-              {errors[campo] && (
-                <p className="text-sm text-red-500 mt-1">Este campo es obligatorio.</p>
+              {errors.nombre && (
+                <p className="text-sm text-red-500 mt-1">
+                  El nombre es obligatorio.
+                </p>
               )}
             </div>
-          ))}
-        </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Apellido"
+                className={`w-full border px-4 py-3 rounded-xl ${
+                  errors.apellido ? "border-red-500" : "border-gray-300"
+                }`}
+                {...register("apellido", { required: true })}
+              />
+              {errors.apellido && (
+                <p className="text-sm text-red-500 mt-1">
+                  El apellido es obligatorio.
+                </p>
+              )}
+            </div>
+          </div>
 
-        {/* Dirección */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Dirección"
-            className={inputClass("direccion")}
-            value={userData.direccion}
-            onChange={(e) => {
-              const value = e.target.value;
-              setUserData((prev) => ({ ...prev, direccion: value }));
-              setErrors((prev) => ({ ...prev, direccion: !value.trim() }));
-            }}
-          />
-          {errors.direccion && (
-            <p className="text-sm text-red-500 mt-1">La dirección es obligatoria.</p>
-          )}
-        </div>
-
-        {/* Teléfono y Email */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <input
-              type="tel"
-              placeholder="Teléfono (9 dígitos)"
-              className={inputClass("telefono")}
-              value={userData.telefono}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, "").slice(0, 9);
-                setUserData((prev) => ({ ...prev, telefono: value }));
-                setErrors((prev) => ({
-                  ...prev,
-                  telefono: !/^\d{9}$/.test(value),
-                }));
-              }}
+              type="text"
+              placeholder="Dirección"
+              className={`w-full border px-4 py-3 rounded-xl ${
+                errors.direccion ? "border-red-500" : "border-gray-300"
+              }`}
+              {...register("direccion", { required: true })}
             />
-            {errors.telefono && (
-              <p className="text-sm text-red-500 mt-1">Debe tener exactamente 9 dígitos.</p>
+            {errors.direccion && (
+              <p className="text-sm text-red-500 mt-1">
+                La dirección es obligatoria.
+              </p>
             )}
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <input
+                type="tel"
+                placeholder="Teléfono (9 dígitos)"
+                className={`w-full border px-4 py-3 rounded-xl ${
+                  errors.telefono ? "border-red-500" : "border-gray-300"
+                }`}
+                {...register("telefono", {
+                  required: true,
+                  pattern: {
+                    value: /^\d{9}$/,
+                    message: "Debe tener exactamente 9 dígitos.",
+                  },
+                })}
+              />
+              {errors.telefono && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.telefono.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                className={`w-full border px-4 py-3 rounded-xl ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
+                {...register("email", {
+                  required: true,
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Correo no válido.",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+          </div>
+
           <div>
             <input
-              type="email"
-              placeholder="Correo electrónico"
-              className={inputClass("email")}
-              value={userData.email}
-              onChange={(e) => {
-                const value = e.target.value;
-                setUserData((prev) => ({ ...prev, email: value }));
-                setErrors((prev) => ({
-                  ...prev,
-                  email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
-                }));
-              }}
+              type="datetime-local"
+              min={fechaMinima}
+              className={`w-full border px-4 py-3 rounded-xl ${
+                errors.fechaEntrega || (fechaSeleccionada && horaInvalida)
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+              {...register("fechaEntrega", { required: true })}
             />
-            {errors.email && (
-              <p className="text-sm text-red-500 mt-1">Correo no válido.</p>
+            {(errors.fechaEntrega || (fechaSeleccionada && horaInvalida)) && (
+              <p className="text-sm text-red-500 mt-1">
+                Selecciona una hora entre 9:00 a.m. y 6:00 p.m.
+              </p>
             )}
+            <p className="text-xs text-gray-500 mt-1">
+              ⏰ Selecciona mínimo 1 hora desde ahora. Atención: 9:00 - 18:00.
+            </p>
           </div>
-        </div>
 
-        {/* Fecha de Entrega */}
-        <div className="mb-6">
-          <input
-            type="datetime-local"
-            className={inputClass("fechaEntrega")}
-            min={new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16)}
-            value={userData.fechaEntrega}
-            onChange={(e) => {
-              const value = e.target.value;
-              const fecha = new Date(value);
-              const hora = fecha.getHours();
-
-              const horaValida = hora >= 9 && hora < 18;
-              setUserData((prev) => ({ ...prev, fechaEntrega: value }));
-              setErrors((prev) => ({
-                ...prev,
-                fechaEntrega: !value || !horaValida,
-              }));
-            }}
-          />
-          {errors.fechaEntrega && (
-            <p className="text-sm text-red-500 mt-1">Hora inválida (9:00 a 18:00).</p>
-          )}
-          <p className="text-xs text-gray-500 mt-1">
-            ⏰ Selecciona mínimo 1 hora desde ahora. Atención: 9:00 a.m. - 6:00 p.m.
-          </p>
-        </div>
-
-        {/* Botones */}
-        <div className="flex gap-4 justify-end">
-          <button
-            onClick={() => setShowUserForm(false)}
-            className="py-2 px-4 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={() => {
-              if (validarCampos()) {
-                setShowUserForm(false);
-                handleFinalizar();
-              }
-            }}
-            className="py-2 px-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 font-semibold"
-          >
-            Confirmar Pedido
-          </button>
-        </div>
+          <div className="flex justify-end gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowUserForm(false)}
+              className="py-2 px-4 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="py-2 px-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 font-semibold"
+              disabled={horaInvalida}
+            >
+              Confirmar Pedido
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

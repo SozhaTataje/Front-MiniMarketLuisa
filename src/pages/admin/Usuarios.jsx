@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axiosInstance";
 import RegisterUserModal from "./modals/UsuariosModal/RegisterUserModal";
-import {
-  FiPlus, FiSearch, FiUsers, FiMail, FiPhone, FiX
-} from "react-icons/fi";
+import { FiPlus, FiSearch, FiUsers, FiMail, FiPhone, FiX } from "react-icons/fi";
+import toast, { Toaster } from "react-hot-toast";
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -12,32 +11,35 @@ const Usuarios = () => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   useEffect(() => {
-    const fetchUsuarios = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get("/api/usuario/all");
-        setUsuarios(res.data);
-      } catch (error) {
-        console.error("Error al obtener usuarios:", error);
-        alert("Error al cargar usuarios.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchUsuarios();
   }, []);
 
+  const fetchUsuarios = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/api/usuario/all");
+      setUsuarios(res.data);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+      toast.error("Error al cargar usuarios.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredUsuarios = usuarios.filter((u) =>
-    `${u.nombre} ${u.email} ${u.telefono}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+    `${u.nombre} ${u.email} ${u.telefono}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUserAdded = () => setShowRegisterModal(false);
+  const handleUserAdded = () => {
+    setShowRegisterModal(false);
+    toast.success("Usuario registrado correctamente");
+    fetchUsuarios();
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
+      <Toaster position="top-right" />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-purple-100 rounded-full">
@@ -55,15 +57,35 @@ const Usuarios = () => {
           <FiPlus /> Nuevo Usuario
         </button>
       </div>
-
-      {/* Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card label="Total Usuarios" value={usuarios.length} icon={<FiUsers />} color="blue" />
-        <Card label="Usuarios Filtrados" value={filteredUsuarios.length} icon={<FiSearch />} color="green" />
-        <Card label="Activos" value={usuarios.filter(u => u.email).length} icon={<FiMail />} color="purple" />
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">Total Usuarios</p>
+              <p className="text-2xl font-bold text-gray-800">{usuarios.length}</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-full"><FiUsers /></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">Usuarios Filtrados</p>
+              <p className="text-2xl font-bold text-gray-800">{filteredUsuarios.length}</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-full"><FiSearch /></div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm font-medium">Activos</p>
+              <p className="text-2xl font-bold text-gray-800">{usuarios.filter(u => u.email).length}</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-full"><FiMail /></div>
+          </div>
+        </div>
       </div>
-
-      {/* Buscador */}
       <div className="bg-white p-6 rounded-xl shadow-lg mb-6">
         <div className="flex items-center gap-3">
           <FiSearch className="text-gray-400" />
@@ -81,8 +103,6 @@ const Usuarios = () => {
           )}
         </div>
       </div>
-
-      {/* Tabla */}
       <div className="bg-white shadow-lg rounded-xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-12 gap-3">
@@ -106,19 +126,19 @@ const Usuarios = () => {
             <table className="min-w-full">
               <thead className="bg-purple-50 border-b border-purple-100">
                 <tr>
-                  <Th>Nombre Completo</Th>
-                  <Th>Email</Th>
-                  <Th>Teléfono</Th>
-                  <Th>Código Verificación</Th>
+                  <th className="px-6 py-4 text-xs font-medium text-purple-700 uppercase tracking-wider text-left">Nombre Completo</th>
+                  <th className="px-6 py-4 text-xs font-medium text-purple-700 uppercase tracking-wider text-left">Email</th>
+                  <th className="px-6 py-4 text-xs font-medium text-purple-700 uppercase tracking-wider text-left">Teléfono</th>
+                  <th className="px-6 py-4 text-xs font-medium text-purple-700 uppercase tracking-wider text-left">Código Verificación</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsuarios.map((u, i) => (
                   <tr key={i} className="hover:bg-gray-50">
-                    <Td className="font-medium text-gray-900">{u.nombre} {u.apellido}</Td>
-                    <Td className="text-sm text-gray-700">{u.email}</Td>
-                    <Td className="text-sm text-gray-700">{u.telefono}</Td>
-                    <Td className="text-sm font-mono text-gray-800">{u.verificationCode || "—"}</Td>
+                    <td className="px-6 py-4 font-medium text-gray-900">{u.nombre} {u.apellido}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{u.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{u.telefono}</td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-800">{u.verificationCode || "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -126,8 +146,6 @@ const Usuarios = () => {
           </div>
         )}
       </div>
-
-      {/* Modal */}
       <RegisterUserModal
         isOpen={showRegisterModal}
         onClose={() => setShowRegisterModal(false)}
@@ -136,28 +154,5 @@ const Usuarios = () => {
     </div>
   );
 };
-
-// Subcomponentes reutilizables
-const Card = ({ label, value, icon, color }) => (
-  <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-gray-500 text-sm font-medium">{label}</p>
-        <p className="text-2xl font-bold text-gray-800">{value}</p>
-      </div>
-      <div className={`p-3 bg-${color}-100 rounded-full`}>{icon}</div>
-    </div>
-  </div>
-);
-
-const Th = ({ children, center }) => (
-  <th className={`px-6 py-4 text-xs font-medium text-purple-700 uppercase tracking-wider ${center ? "text-center" : "text-left"}`}>
-    {children}
-  </th>
-);
-
-const Td = ({ children, center }) => (
-  <td className={`px-6 py-4 ${center ? "text-center" : ""}`}>{children}</td>
-);
 
 export default Usuarios;

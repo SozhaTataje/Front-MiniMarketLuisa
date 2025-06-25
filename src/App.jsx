@@ -27,6 +27,7 @@ import SucursalesAdmin from "./pages/admin/Sucursales";
 import Usuarios from "./pages/admin/Usuarios";
 import Pedidos from "./pages/admin/Pedidos";
 import Categorias from "./pages/admin/Categorias";
+import ProductosGenerales from "./pages/admin/ProductosGenerales";
 
 function RutaPrivada({ children, rolRequerido }) {
   const { usuario } = useAuth();
@@ -85,6 +86,8 @@ function App() {
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="pedidos" element={<Pedidos />} />
             <Route path="categorias" element={<Categorias />} />
+            <Route path="productosGenerales" element={<ProductosGenerales />} />
+
           </Route>
         </Routes>
       </AuthProvider>
