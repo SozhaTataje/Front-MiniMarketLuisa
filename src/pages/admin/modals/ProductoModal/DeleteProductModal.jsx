@@ -20,10 +20,10 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
     setError('');
 
     try {
-      await api.delete(`/productosucursal/eliminar?idProducto=${idProducto}&idSucursal=${idSucursal}`);
-      toast.success('Producto eliminado de la sucursal');
-      onProductDeleted(); 
-      onClose();
+      await api.delete(`/productosucursal/eliminar/${idProducto}/${idSucursal}`);
+      alert('✅ Producto eliminado de la sucursal');
+      onProductDeleted(); // actualiza vista
+      onClose(); // cierra modal
     } catch (err) {
       console.error(err);
       setError(err.response?.data || 'Error al eliminar de sucursal');
@@ -34,7 +34,7 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
   };
 
   const eliminarCompletamente = async () => {
-    const idProducto = producto?.producto?.idproducto;
+    const idProducto = producto?.producto?.idproducto || producto?.idproducto;
 
     if (!idProducto) {
       setError('ID de producto inválido');
@@ -69,6 +69,7 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
+        {/* Encabezado */}
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-bold text-red-600 flex items-center gap-2">
             <FiTrash2 /> Eliminar Producto
@@ -78,9 +79,10 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
           </button>
         </div>
 
+        {/* Contenido */}
         <div className="p-4 space-y-4">
           <p className="text-gray-800">
-            ¿Qué acción deseas realizar con <strong>{producto?.producto?.nombre}</strong>?
+            ¿Qué acción deseas realizar con <strong>{producto?.producto?.nombre || producto?.nombre}</strong>?
           </p>
 
           {sucursalName && (
@@ -96,14 +98,17 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
             </div>
           )}
 
+          {/* Acciones */}
           <div className="space-y-2">
-            <button
-              onClick={eliminarSoloDeSucursal}
-              disabled={isDeleting}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded transition"
-            >
-              {isDeleting ? 'Eliminando de sucursal...' : `Eliminar de "${sucursalName}"`}
-            </button>
+            {sucursalName && (
+              <button
+                onClick={eliminarSoloDeSucursal}
+                disabled={isDeleting}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded transition"
+              >
+                {isDeleting ? 'Eliminando de sucursal...' : `Eliminar de "${sucursalName}"`}
+              </button>
+            )}
 
             <button
               onClick={eliminarCompletamente}

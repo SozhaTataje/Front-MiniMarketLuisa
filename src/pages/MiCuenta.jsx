@@ -9,6 +9,7 @@ const MiCuenta = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [modo, setModo] = useState("login");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     nombre: "",
@@ -25,6 +26,9 @@ const MiCuenta = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       if (modo === "login") {
         const res = await api.post("api/usuario/login", {
@@ -39,9 +43,7 @@ const MiCuenta = () => {
         }
 
         login(token);
-
         const roles = JSON.parse(localStorage.getItem("roles")) || [];
-
         toast.success("Inicio de sesión exitoso 🎉");
 
         if (roles.includes("ROLE_ADMIN")) {
@@ -49,11 +51,22 @@ const MiCuenta = () => {
         } else {
           navigate("/productos");
         }
+
       } else {
         await api.post("api/usuario/signup", form);
-        toast.success("Registro exitoso. Ahora inicia sesión");
-        navigate("/mi-cuenta", { state: { modo: "login" } });
+        toast.success("Registro exitoso. Ahora inicia sesión ✅");
+
+        // Limpiar campos y cambiar a modo login
+        setForm({
+          nombre: "",
+          apellido: "",
+          email: "",
+          telefono: "",
+          password: "",
+        });
+        setModo("login");
       }
+
     } catch (error) {
       if (
         error.response?.status === 403 &&
@@ -62,10 +75,11 @@ const MiCuenta = () => {
         toast.error("Usuario no verificado. Revisa tu correo 📧");
         navigate("/confirmar-correo", { state: { email: form.email } });
       } else {
-        toast.error(
-          error.response?.data || error.message || "Servidor no disponible"
-        );
+        const errorMessage = error.response?.data || error.message || "Error del servidor";
+        toast.error(errorMessage);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,22 +88,28 @@ const MiCuenta = () => {
       <div className="mx-auto mt-10 p-6 bg-white rounded-lg shadow-md max-w-lg h-95">
         <div className="flex justify-around mb-6">
           <button
-            onClick={() => setModo("login")}
-            className={`px-4 py-2 font-semibold ${
-              modo === "login"
-                ? "text-purple-600 border-b-2 border-purple-600"
-                : "text-gray-500"
-            }`}
+            onClick={() => {
+              setModo("login");
+              setForm({ nombre: "", apellido: "", email: "", telefono: "", password: "" });
+            }}
+            className={`px-4 py-2 font-semibold ${modo === "login"
+              ? "text-purple-600 border-b-2 border-purple-600"
+              : "text-gray-500"
+              }`}
+            disabled={isSubmitting}
           >
             Iniciar Sesión
           </button>
           <button
-            onClick={() => setModo("registro")}
-            className={`px-4 py-2 font-semibold ${
-              modo === "registro"
-                ? "text-purple-600 border-b-2 border-purple-600"
-                : "text-gray-500"
-            }`}
+            onClick={() => {
+              setModo("registro");
+              setForm({ nombre: "", apellido: "", email: "", telefono: "", password: "" });
+            }}
+            className={`px-4 py-2 font-semibold ${modo === "registro"
+              ? "text-purple-600 border-b-2 border-purple-600"
+              : "text-gray-500"
+              }`}
+            disabled={isSubmitting}
           >
             Registrarse
           </button>
@@ -106,6 +126,7 @@ const MiCuenta = () => {
                 value={form.nombre}
                 onChange={handleChange}
                 required
+                disabled={isSubmitting}
               />
               <input
                 type="text"
@@ -115,6 +136,7 @@ const MiCuenta = () => {
                 value={form.apellido}
                 onChange={handleChange}
                 required
+                disabled={isSubmitting}
               />
               <input
                 type="text"
@@ -129,6 +151,7 @@ const MiCuenta = () => {
                   }
                 }}
                 required
+                disabled={isSubmitting}
               />
             </>
           )}
@@ -141,6 +164,7 @@ const MiCuenta = () => {
             value={form.email}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           />
           <input
             type="password"
@@ -150,13 +174,25 @@ const MiCuenta = () => {
             value={form.password}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           />
 
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
+            className={`w-full py-2 rounded font-semibold transition-all duration-200 ${isSubmitting
+              ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+              : "bg-purple-600 text-white hover:bg-purple-700"
+              }`}
+            disabled={isSubmitting}
           >
-            {modo === "login" ? "Iniciar Sesión" : "Registrarse"}
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                {modo === "login" ? "Iniciando sesión..." : "Registrando..."}
+              </div>
+            ) : (
+              modo === "login" ? "Iniciar Sesión" : "Registrarse"
+            )}
           </button>
         </form>
       </div>
