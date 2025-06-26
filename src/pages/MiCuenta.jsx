@@ -84,44 +84,48 @@ const MiCuenta = () => {
 
   return (
     <>
-      <div className="mx-auto mt-10 p-6 bg-white rounded-lg shadow-md max-w-lg h-95">
-        <div className="flex justify-around mb-6">
-          <button
-            onClick={() => {
-              setModo("login");
-              setForm({ nombre: "", apellido: "", email: "", telefono: "", password: "" });
-            }}
-            className={`px-4 py-2 font-semibold ${modo === "login"
-              ? "text-purple-600 border-b-2 border-purple-600"
-              : "text-gray-500"
+      <div className="mx-auto mt-10 p-8 bg-gradient-to-br from-white to-purple-50 rounded-2xl shadow-xl max-w-lg border border-purple-100">
+        <div className="flex justify-center mb-8">
+          <div className="bg-gray-100 rounded-full p-1 flex">
+            <button
+              onClick={() => {
+                setModo("login");
+                setForm({ nombre: "", apellido: "", email: "", telefono: "", password: "" });
+              }}
+              className={`px-6 py-2 font-semibold rounded-full transition-all duration-300 ${
+                modo === "login"
+                  ? "bg-purple-600 text-white shadow-lg transform scale-105"
+                  : "text-gray-600 hover:text-purple-600"
               }`}
-            disabled={isSubmitting}
-          >
-            Iniciar Sesión
-          </button>
-          <button
-            onClick={() => {
-              setModo("registro");
-              setForm({ nombre: "", apellido: "", email: "", telefono: "", password: "" });
-            }}
-            className={`px-4 py-2 font-semibold ${modo === "registro"
-              ? "text-purple-600 border-b-2 border-purple-600"
-              : "text-gray-500"
+              disabled={isSubmitting}
+            >
+              Iniciar Sesión
+            </button>
+            <button
+              onClick={() => {
+                setModo("registro");
+                setForm({ nombre: "", apellido: "", email: "", telefono: "", password: "" });
+              }}
+              className={`px-6 py-2 font-semibold rounded-full transition-all duration-300 ${
+                modo === "registro"
+                  ? "bg-purple-600 text-white shadow-lg transform scale-105"
+                  : "text-gray-600 hover:text-purple-600"
               }`}
-            disabled={isSubmitting}
-          >
-            Registrarse
-          </button>
+              disabled={isSubmitting}
+            >
+              Registrarse
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {modo === "registro" && (
             <>
               <input
                 type="text"
                 name="nombre"
                 placeholder="Nombre"
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200 bg-white/80"
                 value={form.nombre}
                 onChange={handleChange}
                 required
@@ -131,7 +135,7 @@ const MiCuenta = () => {
                 type="text"
                 name="apellido"
                 placeholder="Apellido"
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200 bg-white/80"
                 value={form.apellido}
                 onChange={handleChange}
                 required
@@ -141,7 +145,7 @@ const MiCuenta = () => {
                 type="text"
                 name="telefono"
                 placeholder="Teléfono"
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200 bg-white/80"
                 value={form.telefono}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -159,7 +163,7 @@ const MiCuenta = () => {
             type="email"
             name="email"
             placeholder="Correo electrónico"
-            className="w-full border border-gray-300 p-2 rounded"
+            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200 bg-white/80"
             value={form.email}
             onChange={handleChange}
             required
@@ -169,7 +173,7 @@ const MiCuenta = () => {
             type="password"
             name="password"
             placeholder="Contraseña"
-            className="w-full border border-gray-300 p-2 rounded"
+            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200 bg-white/80"
             value={form.password}
             onChange={handleChange}
             required
@@ -178,10 +182,11 @@ const MiCuenta = () => {
 
           <button
             type="submit"
-            className={`w-full py-2 rounded font-semibold transition-all duration-200 ${isSubmitting
-              ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-              : "bg-purple-600 text-white hover:bg-purple-700"
-              }`}
+            className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 transform ${
+              isSubmitting
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 hover:scale-105 shadow-lg hover:shadow-xl"
+            }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
