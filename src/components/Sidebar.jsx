@@ -14,7 +14,7 @@ const Sidebar = () => {
     { label: "Sucursales", icon: <FiMapPin />, path: "/admin/sucursales" },
     { label: "Usuarios", icon: <FiUsers />, path: "/admin/usuarios" },
     { label: "ProductosGenerales", icon: <FiPackage  />, path: "/admin/productosGenerales" },
-
+    { label: "ProductosUnificados", icon: <AiOutlineProduct />, path: "/admin/productosUnificados" },
   ];
 
   return (
