@@ -8,13 +8,12 @@ const Sidebar = () => {
 
   const menuItems = [
     { label: "Dashboard", icon: <FiHome />, path: "/admin/dashboard" },
-    { label: "Productos", icon: <FiBox />, path: "/admin/productos" },
+    { label: "Productos Generales", icon: <FiPackage />, path: "/admin/productosGenerales" },
+    { label: "Productos Sucursales", icon: <FiBox />, path: "/admin/productosSucursales" },
     { label: "Categorías", icon: <FiTag />, path: "/admin/categorias" },
     { label: "Pedidos", icon: <FiShoppingCart />, path: "/admin/pedidos" },
     { label: "Sucursales", icon: <FiMapPin />, path: "/admin/sucursales" },
     { label: "Usuarios", icon: <FiUsers />, path: "/admin/usuarios" },
-    { label: "ProductosGenerales", icon: <FiPackage  />, path: "/admin/productosGenerales" },
-    { label: "ProductosUnificados", icon: <AiOutlineProduct />, path: "/admin/productosUnificados" },
   ];
 
   return (

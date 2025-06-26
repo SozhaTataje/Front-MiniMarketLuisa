@@ -44,7 +44,7 @@ const MiCuenta = () => {
 
         login(token);
         const roles = JSON.parse(localStorage.getItem("roles")) || [];
-        toast.success("Inicio de sesión exitoso 🎉");
+        toast.success("Inicio de sesión exitoso");
 
         if (roles.includes("ROLE_ADMIN")) {
           navigate("/admin/dashboard");
@@ -54,9 +54,8 @@ const MiCuenta = () => {
 
       } else {
         await api.post("api/usuario/signup", form);
-        toast.success("Registro exitoso. Ahora inicia sesión ✅");
+        toast.success("Registro exitoso. Ahora inicia sesión");
 
-        // Limpiar campos y cambiar a modo login
         setForm({
           nombre: "",
           apellido: "",

@@ -2,9 +2,9 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {  FiPlus, FiTrash2, FiEdit, FiPackage} from "react-icons/fi";
 import toast from "react-hot-toast";
 import api from "../../api/axiosInstance";
-import AddProductModal from "./modals/ProductoModal/AddProductModal";
-import EditProductModal from "./modals/ProductoModal/EditProductModal";
-import DeleteProductModal from "./modals/ProductoModal/DeleteProductModal";
+import AddProductModal from "./modals/ProductoSucursalModal/AddProductModal";
+import EditProductModal from "./modals/ProductoSucursalModal/EditProductModal";
+import DeleteProductModal from "./modals/ProductoSucursalModal/DeleteProductModal";
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);

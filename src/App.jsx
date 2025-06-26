@@ -1,11 +1,4 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  Outlet,
-  useLocation,
-} from "react-router-dom";
+import {BrowserRouter,Routes,Route,Navigate,Outlet,useLocation,} from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
@@ -22,13 +15,14 @@ import PedidoConfirmacion from "./pages/PedidoConfirmacion";
 import HistorialPedidos from "./pages/HistorialPedidos";
 
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
-import Productos from "./pages/admin/Productos";
+import ProductosGenerales from "./pages/admin/ProductosGenerales";
+import ProductosSucursales from "./pages/admin/ProductosSucursales";
 import SucursalesAdmin from "./pages/admin/Sucursales";
 import Usuarios from "./pages/admin/Usuarios";
 import Pedidos from "./pages/admin/Pedidos";
 import Categorias from "./pages/admin/Categorias";
-import ProductosGenerales from "./pages/admin/ProductosGenerales";
-import ProductosUnificados from "./pages/admin/ProductosUnificados";
+
+
 
 function RutaPrivada({ children, rolRequerido }) {
   const { usuario } = useAuth();
@@ -82,13 +76,13 @@ function App() {
           >
             <Route index element={<DashboardAdmin />} />
             <Route path="dashboard" element={<DashboardAdmin />} />
-            <Route path="productos" element={<Productos />} />
+            <Route path="productosGenerales" element={<ProductosGenerales />} />
+            <Route path="productosSucursales" element={<ProductosSucursales />} />
             <Route path="sucursales" element={<SucursalesAdmin />} />
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="pedidos" element={<Pedidos />} />
             <Route path="categorias" element={<Categorias />} />
-            <Route path="productosGenerales" element={<ProductosGenerales />} />
-            <Route path="productosUnificados" element={<ProductosUnificados />} />
+            
 
           </Route>
         </Routes>

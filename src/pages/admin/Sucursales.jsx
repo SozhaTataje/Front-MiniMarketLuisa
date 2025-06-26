@@ -95,7 +95,7 @@ const Sucursales = () => {
   {filtered.map((s) => (
     <tr
       key={s.idsucursal}
-      className="transition-colors bg-white hover:bg-purple-50 sm:table-row flex flex-col sm:flex-row sm:items-center sm:justify-between sm:table-row w-full sm:w-auto border-b sm:border-none"
+      className="transition-colors bg-white hover:bg-purple-50 sm:table-row flex flex-col sm:flex-row sm:items-center sm:justify-between w-full sm:w-auto border-b sm:border-none"
     >
       <td className="px-6 py-4 font-semibold sm:hidden">ID:</td>
       <Td>{s.idsucursal}</Td>
