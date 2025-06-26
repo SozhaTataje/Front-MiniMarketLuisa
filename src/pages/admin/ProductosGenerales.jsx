@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FiPlus, FiTrash2, FiEdit, FiPackage } from "react-icons/fi";
 import {
   Search,
   Plus,
@@ -103,7 +104,8 @@ const ProductosGenerales = () => {
     total: productos.length,
     activos: productos.filter((p) => p.estado).length,
     precioPromedio: productos.length
-      ? productos.reduce((sum, p) => sum + (p.precio || 0), 0) / productos.length
+      ? productos.reduce((sum, p) => sum + (p.precio || 0), 0) /
+        productos.length
       : 0,
   };
 
@@ -111,24 +113,31 @@ const ProductosGenerales = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Productos</h1>
+          <h1 className="text-3xl font-bold text-purple-700 flex items-center gap-2">
+            <FiPackage /> Gestión de productos{" "}
+          </h1>
           <p className="text-gray-600">Gestiona tu catálogo de productos</p>
         </div>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <StatCard title="Total Productos" value={stats.total} icon={Package} color="text-blue-600" />
-          <StatCard title="Activos" value={stats.activos} icon={CheckCircle} color="text-green-600" />
-          <StatCard title="Inactivos" value={stats.total - stats.activos} icon={AlertCircle} color="text-red-600" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatCard
-            title="Precio Promedio"
-            value={`S/ ${stats.precioPromedio.toFixed(2)}`}
-            icon={TrendingUp}
+            title="Total Productos"
+            value={stats.total}
+            icon={Package}
             color="text-purple-600"
           />
+          <StatCard
+            title="Activos"
+            value={stats.activos}
+            icon={CheckCircle}
+            color="text-green-600"
+          />
+          <StatCard
+            title="Inactivos"
+            value={stats.total - stats.activos}
+            icon={AlertCircle}
+            color="text-red-600"
+          />
         </div>
-
-        {/* Filtros */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 flex gap-3">
@@ -139,13 +148,17 @@ const ProductosGenerales = () => {
                   placeholder="Buscar productos..."
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={filtros.nombre}
-                  onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
+                  onChange={(e) =>
+                    setFiltros({ ...filtros, nombre: e.target.value })
+                  }
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`px-4 py-2.5 border rounded-lg flex items-center gap-2 ${
-                  showFilters ? "bg-blue-50 border-blue-200 text-blue-700" : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  showFilters
+                    ? "bg-blue-50 border-blue-200 text-blue-700"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Filter className="h-4 w-4" />
@@ -156,7 +169,7 @@ const ProductosGenerales = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => abrirModal("crear")}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Nuevo Producto
@@ -166,7 +179,9 @@ const ProductosGenerales = () => {
                 disabled={loading}
                 className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                />
               </button>
             </div>
           </div>
@@ -176,7 +191,9 @@ const ProductosGenerales = () => {
               <select
                 className="px-4 py-2 border border-gray-200 rounded-lg"
                 value={filtros.categoria}
-                onChange={(e) => setFiltros({ ...filtros, categoria: e.target.value })}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, categoria: e.target.value })
+                }
               >
                 <option value="">Todas las categorías</option>
                 {categorias.map((cat) => (
@@ -188,7 +205,9 @@ const ProductosGenerales = () => {
               <select
                 className="px-4 py-2 border border-gray-200 rounded-lg"
                 value={filtros.estado}
-                onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, estado: e.target.value })
+                }
               >
                 <option value="">Todos los estados</option>
                 <option value="true">Activos</option>
@@ -198,17 +217,16 @@ const ProductosGenerales = () => {
           )}
         </div>
 
-        {/* Tabla de productos */}
-        <div className="overflow-x-auto bg-white rounded-xl border border-gray-100">
-          <table className="min-w-full text-sm text-gray-600">
+        <div className="overflow-x-auto bg-white rounded-xl border border-gray-100 ">
+          <table className="min-w-full text-sm text-gray-600 ">
             <thead className="bg-gray-50 text-xs uppercase text-gray-500">
               <tr>
                 <th className="px-6 py-4">Imagen</th>
                 <th className="px-6 py-4">Nombre</th>
                 <th className="px-6 py-4">Categoría</th>
                 <th className="px-6 py-4">Precio</th>
-                <th className="px-6 py-4">Estado</th>
-                <th className="px-6 py-4 text-center">Acciones</th>
+                <th className="px-6 py-4 ">Estado</th>
+                <th className="px-6 py-4 ">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -227,15 +245,21 @@ const ProductosGenerales = () => {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">{producto.nombre}</td>
-                  <td className="px-6 py-4">{producto.categoria?.name || "—"}</td>
-                  <td className="px-6 py-4 font-semibold text-blue-600">
+                  <td className="px-6 py-4 font-medium text-gray-900">
+                    {producto.nombre}
+                  </td>
+                  <td className="px-6 py-4">
+                    {producto.categoria?.name || "—"}
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-purple-600">
                     S/ {producto.precio?.toFixed(2)}
                   </td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-2 py-1 text-xs rounded-full font-medium ${
-                        producto.estado ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        producto.estado
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
                       }`}
                     >
                       {producto.estado ? "Activo" : "Inactivo"}
@@ -245,21 +269,21 @@ const ProductosGenerales = () => {
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={() => abrirModal("ver", producto)}
-                        className="p-2 bg-gray-100 rounded hover:bg-gray-200"
+                        className="p-2  rounded hover:bg-gray-200"
                       >
                         <Eye className="h-4 w-4 text-gray-600" />
                       </button>
                       <button
                         onClick={() => abrirModal("editar", producto)}
-                        className="p-2 bg-blue-600 rounded hover:bg-blue-700 text-white"
+                        className="text-green-600 hover:text-green-800 p-1 hover:bg-green-100 rounded"
                       >
-                        <Edit className="h-4 w-4" />
+                        <FiEdit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => abrirModal("eliminar", producto)}
-                        className="p-2 bg-red-600 rounded hover:bg-red-700 text-white"
+                        className="text-red-600 hover:text-red-800 p-1 hover:bg-red-100 rounded"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <FiTrash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -269,7 +293,6 @@ const ProductosGenerales = () => {
           </table>
         </div>
 
-        {/* Modales */}
         <CrearProductoModal
           isOpen={modales.crear}
           onClose={cerrarModales}
@@ -308,7 +331,7 @@ const StatCard = ({ title, value, icon, color }) => {
           <p className="text-sm text-gray-600 mb-1">{title}</p>
           <p className={`text-2xl font-bold ${color}`}>{value}</p>
         </div>
-        <Icon className={`h-8 w-8 ${color} opacity-20`} />
+        <Icon className={`h-8 w-8 ${color} opacity-80`} />
       </div>
     </div>
   );
