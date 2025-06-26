@@ -1,6 +1,5 @@
 import React from "react";
-import { FiHome, FiBox, FiMapPin, FiUsers, FiShoppingCart, FiTag, FiPackage   } from "react-icons/fi";
-import { AiOutlineProduct } from "react-icons/ai";
+import { FiHome, FiBox, FiMapPin, FiUsers, FiShoppingCart, FiTag, FiPackage, FiArchive   } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -8,7 +7,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { label: "Dashboard", icon: <FiHome />, path: "/admin/dashboard" },
-    { label: "Productos Generales", icon: <FiPackage />, path: "/admin/productosGenerales" },
+    { label: "Productos Generales", icon: <FiArchive  />, path: "/admin/productosGenerales" },
     { label: "Productos Sucursales", icon: <FiBox />, path: "/admin/productosSucursales" },
     { label: "Categorías", icon: <FiTag />, path: "/admin/categorias" },
     { label: "Pedidos", icon: <FiShoppingCart />, path: "/admin/pedidos" },

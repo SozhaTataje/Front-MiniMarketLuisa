@@ -1,362 +1,384 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  Search, Plus, Edit, Trash2, Eye, RefreshCw,
-  AlertCircle, CheckCircle, Package, TrendingUp
-} from 'lucide-react';
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle,
+  Package,
+  TrendingUp,
+  Filter,
+} from "lucide-react";
 import api from "../../api/axiosInstance";
-
-import CrearProductoModal from './modals/ProductoGeneralModal/CrearProductoModal';
-import EditarProductoModal from './modals/ProductoGeneralModal/EditarProductoModal';
-import VerProductoModal from './modals/ProductoGeneralModal/VerProductoModal';
-import EliminarProductoModal from './modals/ProductoGeneralModal/EliminarProductoModal';
+import CrearProductoModal from "./modals/ProductoGeneralModal/CrearProductoModal";
+import EditarProductoModal from "./modals/ProductoGeneralModal/EditarProductoModal";
+import VerProductoModal from "./modals/ProductoGeneralModal/VerProductoModal";
+import EliminarProductoModal from "./modals/ProductoGeneralModal/EliminarProductoModal";
 
 const ProductosGenerales = () => {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
-  const [modalCrearOpen, setModalCrearOpen] = useState(false);
-  const [modalEditarOpen, setModalEditarOpen] = useState(false);
-  const [modalVerOpen, setModalVerOpen] = useState(false);
-  const [modalEliminarOpen, setModalEliminarOpen] = useState(false);
+  const [modales, setModales] = useState({
+    crear: false,
+    editar: false,
+    ver: false,
+    eliminar: false,
+  });
+
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [filtros, setFiltros] = useState({ nombre: '', categoria: '', estado: '' });
+  const [filtros, setFiltros] = useState({
+    nombre: "",
+    categoria: "",
+    estado: "",
+  });
 
   useEffect(() => {
-    cargarProductos();
-    cargarCategorias();
+    cargarDatos();
   }, []);
 
   useEffect(() => {
     if (success || error) {
       const timeout = setTimeout(() => {
-        setSuccess('');
-        setError('');
+        setSuccess("");
+        setError("");
       }, 4000);
       return () => clearTimeout(timeout);
     }
   }, [success, error]);
 
-  const cargarProductos = async () => {
+  const cargarDatos = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/producto/all`);
-      setProductos(Array.isArray(response.data) ? response.data : []);
+      const [productosRes, categoriasRes] = await Promise.all([
+        api.get("/producto/all"),
+        api.get("/categoria/all"),
+      ]);
+      setProductos(Array.isArray(productosRes.data) ? productosRes.data : []);
+      setCategorias(categoriasRes.data || []);
     } catch (err) {
-      console.error('Error al cargar productos:', err);
-      setError('Error al cargar los productos: ' + err.message);
+      setError("Error al cargar los datos: " + err.message);
       setProductos([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const cargarCategorias = async () => {
-    try {
-      const response = await api.get(`/categoria/all`);
-      setCategorias(response.data);
-    } catch (err) {
-      console.error('Error al cargar categorías:', err);
-    }
+  const abrirModal = (tipo, producto = null) => {
+    setSelectedProduct(producto);
+    setModales((prev) => ({ ...prev, [tipo]: true }));
   };
 
-  const handleCrear = () => setModalCrearOpen(true);
-  const handleEditar = (producto) => {
-    setSelectedProduct(producto);
-    setModalEditarOpen(true);
-  };
-  const handleVer = (producto) => {
-    setSelectedProduct(producto);
-    setModalVerOpen(true);
-  };
-  const handleEliminar = (producto) => {
-    setSelectedProduct(producto);
-    setModalEliminarOpen(true);
-  };
   const cerrarModales = () => {
-    setModalCrearOpen(false);
-    setModalEditarOpen(false);
-    setModalVerOpen(false);
-    setModalEliminarOpen(false);
+    setModales({ crear: false, editar: false, ver: false, eliminar: false });
     setSelectedProduct(null);
   };
+
   const handleProductoActualizado = (mensaje) => {
     setSuccess(mensaje);
-    cargarProductos();
+    cargarDatos();
     cerrarModales();
   };
 
-  const handleSelectAll = (checked) => {
-    if (checked) {
-      const allIds = productosFiltrados.map(p => p.idproducto).filter(Boolean);
-      setSelectedItems(allIds);
-    } else {
-      setSelectedItems([]);
-    }
-  };
-
-
-  const productosFiltrados = productos.filter(producto => {
-    const matchNombre = !filtros.nombre || producto.nombre?.toLowerCase().includes(filtros.nombre.toLowerCase());
-    const matchCategoria = !filtros.categoria || producto.categoria?.id?.toString() === filtros.categoria;
-    const matchEstado = filtros.estado === '' || producto.estado?.toString() === filtros.estado;
+  const productosFiltrados = productos.filter((producto) => {
+    const matchNombre =
+      !filtros.nombre ||
+      producto.nombre?.toLowerCase().includes(filtros.nombre.toLowerCase());
+    const matchCategoria =
+      !filtros.categoria ||
+      producto.categoria?.id?.toString() === filtros.categoria;
+    const matchEstado =
+      filtros.estado === "" || producto.estado?.toString() === filtros.estado;
     return matchNombre && matchCategoria && matchEstado;
   });
 
-  const EstadisticasCard = () => {
-    const totalProductos = productos.length;
-    const productosActivos = productos.filter(p => p.estado).length;
-    const productosInactivos = totalProductos - productosActivos;
-    const precioPromedio = productos.length > 0
-      ? productos.reduce((sum, p) => sum + (p.precio || 0), 0) / productos.length
-      : 0;
+  const stats = {
+    total: productos.length,
+    activos: productos.filter((p) => p.estado).length,
+    precioPromedio: productos.length
+      ? productos.reduce((sum, p) => sum + (p.precio || 0), 0) /
+        productos.length
+      : 0,
+  };
 
+  const StatCard = ({ title, value, icon, color }) => {
+    const IconComponent = icon;
     return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Productos</p>
-              <p className="text-2xl font-bold text-gray-900">{totalProductos}</p>
-            </div>
-            <Package className="h-8 w-8 text-blue-600" />
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-600 mb-1">{title}</p>
+            <p className={`text-2xl font-bold ${color}`}>{value}</p>
           </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Productos Activos</p>
-              <p className="text-2xl font-bold text-green-600">{productosActivos}</p>
-            </div>
-            <CheckCircle className="h-8 w-8 text-green-600" />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Productos Inactivos</p>
-              <p className="text-2xl font-bold text-red-600">{productosInactivos}</p>
-            </div>
-            <AlertCircle className="h-8 w-8 text-red-600" />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Precio Promedio</p>
-              <p className="text-2xl font-bold text-purple-600">S/ {precioPromedio.toFixed(2)}</p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-purple-600" />
-          </div>
+          <IconComponent className={`h-8 w-8 ${color} opacity-20`} />
         </div>
       </div>
     );
   };
 
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Productos</h1>
-        <p className="text-gray-600">Administra el catálogo general de productos</p>
+  const ProductCard = ({ producto }) => (
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200">
+      <div className="aspect-square bg-gray-50 relative group">
+        {producto.imagen ? (
+          <img
+            src={producto.imagen}
+            alt={producto.nombre}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Package className="h-12 w-12 text-gray-300" />
+          </div>
+        )}
+        <div className="absolute top-2 right-2">
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              producto.estado
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {producto.estado ? "Activo" : "Inactivo"}
+          </span>
+        </div>
       </div>
 
-      <EstadisticasCard />
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-900 mb-1 truncate">
+          {producto.nombre}
+        </h3>
+        <p className="text-sm text-gray-600 mb-2">
+          {producto.categoria?.name || "Sin categoría"}
+        </p>
+        <p className="text-lg font-bold text-blue-600 mb-3">
+          S/ {producto.precio?.toFixed(2) ?? "0.00"}
+        </p>
 
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
-          <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-          <span className="text-red-800">{error}</span>
-          <button onClick={() => setError('')} className="ml-auto text-red-600 hover:text-red-800">×</button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => abrirModal("ver", producto)}
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+          >
+            Ver
+          </button>
+          <button
+            onClick={() => abrirModal("editar", producto)}
+            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+          >
+            <Edit className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => abrirModal("eliminar", producto)}
+            className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
-      )}
-      {success && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
-          <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-          <span className="text-green-800">{success}</span>
-          <button onClick={() => setSuccess('')} className="ml-auto text-green-600 hover:text-green-800">×</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Productos</h1>
+          <p className="text-gray-600">Gestiona tu catálogo de productos</p>
         </div>
-      )}
 
-      <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-          <div className="flex flex-col sm:flex-row gap-4 flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Buscar por nombre..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={filtros.nombre}
-                onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
-              />
-            </div>
-            <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={filtros.categoria}
-              onChange={(e) => setFiltros({ ...filtros, categoria: e.target.value })}
-            >
-              <option value="">Todas las categorías</option>
-              {categorias.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-            <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={filtros.estado}
-              onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
-            >
-              <option value="">Todos los estados</option>
-              <option value="true">Activos</option>
-              <option value="false">Inactivos</option>
-            </select>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <StatCard
+            title="Total Productos"
+            value={stats.total}
+            icon={Package}
+            color="text-blue-600"
+          />
+          <StatCard
+            title="Activos"
+            value={stats.activos}
+            icon={CheckCircle}
+            color="text-green-600"
+          />
+          <StatCard
+            title="Inactivos"
+            value={stats.total - stats.activos}
+            icon={AlertCircle}
+            color="text-red-600"
+          />
+          <StatCard
+            title="Precio Promedio"
+            value={`S/ ${stats.precioPromedio.toFixed(2)}`}
+            icon={TrendingUp}
+            color="text-purple-600"
+          />
+        </div>
 
-          <div className="flex gap-2">
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-600 mr-3" />
+            <span className="text-red-800 flex-1">{error}</span>
             <button
-              onClick={handleCrear}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+              onClick={() => setError("")}
+              className="text-red-600 hover:text-red-800 ml-2"
             >
-              <Plus className="h-4 w-4" />
-              Nuevo Producto
-            </button>
-            <button
-              onClick={cargarProductos}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center gap-2 transition-colors"
-              disabled={loading}
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              Actualizar
+              ×
             </button>
           </div>
-        </div>
+        )}
 
-        {selectedItems.length > 0 && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <span className="text-blue-800 font-medium">
-                {selectedItems.length} producto(s) seleccionado(s)
-              </span>
+        {success && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+            <span className="text-green-800 flex-1">{success}</span>
+            <button
+              onClick={() => setSuccess("")}
+              className="text-green-600 hover:text-green-800 ml-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 flex gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Buscar productos..."
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  value={filtros.nombre}
+                  onChange={(e) =>
+                    setFiltros({ ...filtros, nombre: e.target.value })
+                  }
+                />
+              </div>
               <button
-                onClick={() => setSelectedItems([])}
-                className="text-blue-600 hover:text-blue-800 text-sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className={`px-4 py-2.5 border rounded-lg flex items-center gap-2 transition-colors ${
+                  showFilters
+                    ? "bg-blue-50 border-blue-200 text-blue-700"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                }`}
               >
-                Limpiar selección
+                <Filter className="h-4 w-4" />
+                Filtros
+              </button>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => abrirModal("crear")}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                Nuevo Producto
+              </button>
+              <button
+                onClick={cargarDatos}
+                disabled={loading}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                />
               </button>
             </div>
           </div>
+
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-3">
+              <select
+                className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={filtros.categoria}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, categoria: e.target.value })
+                }
+              >
+                <option value="">Todas las categorías</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={filtros.estado}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, estado: e.target.value })
+                }
+              >
+                <option value="">Todos los estados</option>
+                <option value="true">Activos</option>
+                <option value="false">Inactivos</option>
+              </select>
+            </div>
+          )}
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
+          </div>
+        ) : productosFiltrados.length === 0 ? (
+          <div className="bg-white rounded-xl p-12 text-center border border-gray-100">
+            <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No hay productos
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Comienza agregando tu primer producto
+            </p>
+            <button
+              onClick={() => abrirModal("crear")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 mx-auto transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Crear Producto
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {productosFiltrados.map((producto) => (
+              <ProductCard key={producto.idproducto} producto={producto} />
+            ))}
+          </div>
         )}
-      </div>
 
-      {/* Tabla de Productos */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow-sm border">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-2">
-                <input
-                  type="checkbox"
-                  checked={selectedItems.length === productosFiltrados.length && productosFiltrados.length > 0}
-                  onChange={e => handleSelectAll(e.target.checked)}
-                />
-              </th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {productosFiltrados.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-gray-500">
-                  No se encontraron productos.
-                </td>
-              </tr>
-            ) : (
-              productosFiltrados.map(producto => (
-                <tr key={producto.idproducto}>
-                  <td className="px-4 py-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(producto.idproducto)}
-                      onChange={e => {
-                        if (e.target.checked) {
-                          setSelectedItems([...selectedItems, producto.idproducto]);
-                        } else {
-                          setSelectedItems(selectedItems.filter(id => id !== producto.idproducto));
-                        }
-                      }}
-                    />
-                  </td>
-                  <td className="px-4 py-2">{producto.nombre}</td>
-                  <td className="px-4 py-2">{producto.categoria?.name || '-'}</td>
-                  <td className="px-4 py-2">S/ {producto.precio?.toFixed(2) ?? '0.00'}</td>
-                  <td className="px-4 py-2">
-                    {producto.estado
-                      ? <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Activo</span>
-                      : <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Inactivo</span>
-                    }
-                  </td>
-                  <td className="px-4 py-2 flex justify-center gap-2">
-                    <button
-                      className="text-blue-600 hover:text-blue-800"
-                      title="Ver"
-                      onClick={() => handleVer(producto)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="text-yellow-600 hover:text-yellow-800"
-                      title="Editar"
-                      onClick={() => handleEditar(producto)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800"
-                      title="Eliminar"
-                      onClick={() => handleEliminar(producto)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        {/* Modales */}
+        <CrearProductoModal
+          isOpen={modales.crear}
+          onClose={cerrarModales}
+          categorias={categorias}
+          onProductoCreado={handleProductoActualizado}
+        />
+        <EditarProductoModal
+          isOpen={modales.editar}
+          onClose={cerrarModales}
+          producto={selectedProduct}
+          categorias={categorias}
+          onProductoActualizado={handleProductoActualizado}
+        />
+        <VerProductoModal
+          isOpen={modales.ver}
+          onClose={cerrarModales}
+          producto={selectedProduct}
+        />
+        <EliminarProductoModal
+          isOpen={modales.eliminar}
+          onClose={cerrarModales}
+          producto={selectedProduct}
+          onProductoEliminado={handleProductoActualizado}
+        />
       </div>
-      {/* (No lo repetimos por límite de espacio, pero lo que tienes ya está bien, puedes pegarlo debajo aquí igual) */}
-
-      {/* Modales */}
-      <CrearProductoModal
-        isOpen={modalCrearOpen}
-        onClose={cerrarModales}
-        categorias={categorias}
-        onProductoCreado={handleProductoActualizado}
-      />
-      <EditarProductoModal
-        isOpen={modalEditarOpen}
-        onClose={cerrarModales}
-        producto={selectedProduct}
-        categorias={categorias}
-        onProductoActualizado={handleProductoActualizado}
-      />
-      <VerProductoModal
-        isOpen={modalVerOpen}
-        onClose={cerrarModales}
-        producto={selectedProduct}
-      />
-      <EliminarProductoModal
-        isOpen={modalEliminarOpen}
-        onClose={cerrarModales}
-        producto={selectedProduct}
-        onProductoEliminado={handleProductoActualizado}
-      />
     </div>
   );
 };
