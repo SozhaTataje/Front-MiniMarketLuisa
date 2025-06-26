@@ -10,6 +10,7 @@ import {
   Package,
   TrendingUp,
   Filter,
+  Eye,
 } from "lucide-react";
 import api from "../../api/axiosInstance";
 import CrearProductoModal from "./modals/ProductoGeneralModal/CrearProductoModal";
@@ -102,87 +103,9 @@ const ProductosGenerales = () => {
     total: productos.length,
     activos: productos.filter((p) => p.estado).length,
     precioPromedio: productos.length
-      ? productos.reduce((sum, p) => sum + (p.precio || 0), 0) /
-        productos.length
+      ? productos.reduce((sum, p) => sum + (p.precio || 0), 0) / productos.length
       : 0,
   };
-
-  const StatCard = ({ title, value, icon, color }) => {
-    const IconComponent = icon;
-    return (
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">{title}</p>
-            <p className={`text-2xl font-bold ${color}`}>{value}</p>
-          </div>
-          <IconComponent className={`h-8 w-8 ${color} opacity-20`} />
-        </div>
-      </div>
-    );
-  };
-
-  const ProductCard = ({ producto }) => (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200">
-      <div className="aspect-square bg-gray-50 relative group">
-        {producto.imagen ? (
-          <img
-            src={producto.imagen}
-            alt={producto.nombre}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="h-12 w-12 text-gray-300" />
-          </div>
-        )}
-        <div className="absolute top-2 right-2">
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${
-              producto.estado
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-          >
-            {producto.estado ? "Activo" : "Inactivo"}
-          </span>
-        </div>
-      </div>
-
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1 truncate">
-          {producto.nombre}
-        </h3>
-        <p className="text-sm text-gray-600 mb-2">
-          {producto.categoria?.name || "Sin categoría"}
-        </p>
-        <p className="text-lg font-bold text-blue-600 mb-3">
-          S/ {producto.precio?.toFixed(2) ?? "0.00"}
-        </p>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => abrirModal("ver", producto)}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm font-medium transition-colors"
-          >
-            Ver
-          </button>
-          <button
-            onClick={() => abrirModal("editar", producto)}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
-          >
-            <Edit className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => abrirModal("eliminar", producto)}
-            className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -192,25 +115,11 @@ const ProductosGenerales = () => {
           <p className="text-gray-600">Gestiona tu catálogo de productos</p>
         </div>
 
+        {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <StatCard
-            title="Total Productos"
-            value={stats.total}
-            icon={Package}
-            color="text-blue-600"
-          />
-          <StatCard
-            title="Activos"
-            value={stats.activos}
-            icon={CheckCircle}
-            color="text-green-600"
-          />
-          <StatCard
-            title="Inactivos"
-            value={stats.total - stats.activos}
-            icon={AlertCircle}
-            color="text-red-600"
-          />
+          <StatCard title="Total Productos" value={stats.total} icon={Package} color="text-blue-600" />
+          <StatCard title="Activos" value={stats.activos} icon={CheckCircle} color="text-green-600" />
+          <StatCard title="Inactivos" value={stats.total - stats.activos} icon={AlertCircle} color="text-red-600" />
           <StatCard
             title="Precio Promedio"
             value={`S/ ${stats.precioPromedio.toFixed(2)}`}
@@ -219,32 +128,7 @@ const ProductosGenerales = () => {
           />
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center">
-            <AlertCircle className="h-5 w-5 text-red-600 mr-3" />
-            <span className="text-red-800 flex-1">{error}</span>
-            <button
-              onClick={() => setError("")}
-              className="text-red-600 hover:text-red-800 ml-2"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center">
-            <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
-            <span className="text-green-800 flex-1">{success}</span>
-            <button
-              onClick={() => setSuccess("")}
-              className="text-green-600 hover:text-green-800 ml-2"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
+        {/* Filtros */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 flex gap-3">
@@ -253,19 +137,15 @@ const ProductosGenerales = () => {
                 <input
                   type="text"
                   placeholder="Buscar productos..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={filtros.nombre}
-                  onChange={(e) =>
-                    setFiltros({ ...filtros, nombre: e.target.value })
-                  }
+                  onChange={(e) => setFiltros({ ...filtros, nombre: e.target.value })}
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-4 py-2.5 border rounded-lg flex items-center gap-2 transition-colors ${
-                  showFilters
-                    ? "bg-blue-50 border-blue-200 text-blue-700"
-                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                className={`px-4 py-2.5 border rounded-lg flex items-center gap-2 ${
+                  showFilters ? "bg-blue-50 border-blue-200 text-blue-700" : "border-gray-200 text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Filter className="h-4 w-4" />
@@ -276,7 +156,7 @@ const ProductosGenerales = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => abrirModal("crear")}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Nuevo Producto
@@ -284,11 +164,9 @@ const ProductosGenerales = () => {
               <button
                 onClick={cargarDatos}
                 disabled={loading}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50"
               >
-                <RefreshCw
-                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
-                />
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               </button>
             </div>
           </div>
@@ -296,11 +174,9 @@ const ProductosGenerales = () => {
           {showFilters && (
             <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap gap-3">
               <select
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-2 border border-gray-200 rounded-lg"
                 value={filtros.categoria}
-                onChange={(e) =>
-                  setFiltros({ ...filtros, categoria: e.target.value })
-                }
+                onChange={(e) => setFiltros({ ...filtros, categoria: e.target.value })}
               >
                 <option value="">Todas las categorías</option>
                 {categorias.map((cat) => (
@@ -310,11 +186,9 @@ const ProductosGenerales = () => {
                 ))}
               </select>
               <select
-                className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-2 border border-gray-200 rounded-lg"
                 value={filtros.estado}
-                onChange={(e) =>
-                  setFiltros({ ...filtros, estado: e.target.value })
-                }
+                onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
               >
                 <option value="">Todos los estados</option>
                 <option value="true">Activos</option>
@@ -324,41 +198,83 @@ const ProductosGenerales = () => {
           )}
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
-          </div>
-        ) : productosFiltrados.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center border border-gray-100">
-            <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No hay productos
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Comienza agregando tu primer producto
-            </p>
-            <button
-              onClick={() => abrirModal("crear")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 mx-auto transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              Crear Producto
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {productosFiltrados.map((producto) => (
-              <ProductCard key={producto.idproducto} producto={producto} />
-            ))}
-          </div>
-        )}
+        {/* Tabla de productos */}
+        <div className="overflow-x-auto bg-white rounded-xl border border-gray-100">
+          <table className="min-w-full text-sm text-gray-600">
+            <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+              <tr>
+                <th className="px-6 py-4">Imagen</th>
+                <th className="px-6 py-4">Nombre</th>
+                <th className="px-6 py-4">Categoría</th>
+                <th className="px-6 py-4">Precio</th>
+                <th className="px-6 py-4">Estado</th>
+                <th className="px-6 py-4 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productosFiltrados.map((producto) => (
+                <tr key={producto.idproducto} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    {producto.imagen ? (
+                      <img
+                        src={producto.imagen}
+                        alt={producto.nombre}
+                        className="w-10 h-10 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-lg">
+                        <Package className="h-4 w-4 text-gray-400" />
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-gray-900">{producto.nombre}</td>
+                  <td className="px-6 py-4">{producto.categoria?.name || "—"}</td>
+                  <td className="px-6 py-4 font-semibold text-blue-600">
+                    S/ {producto.precio?.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full font-medium ${
+                        producto.estado ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {producto.estado ? "Activo" : "Inactivo"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => abrirModal("ver", producto)}
+                        className="p-2 bg-gray-100 rounded hover:bg-gray-200"
+                      >
+                        <Eye className="h-4 w-4 text-gray-600" />
+                      </button>
+                      <button
+                        onClick={() => abrirModal("editar", producto)}
+                        className="p-2 bg-blue-600 rounded hover:bg-blue-700 text-white"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => abrirModal("eliminar", producto)}
+                        className="p-2 bg-red-600 rounded hover:bg-red-700 text-white"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {/* Modales */}
         <CrearProductoModal
           isOpen={modales.crear}
           onClose={cerrarModales}
           categorias={categorias}
-          onProductoCreado={handleProductoActualizado}
+          onSuccess={handleProductoActualizado}
         />
         <EditarProductoModal
           isOpen={modales.editar}
@@ -376,8 +292,23 @@ const ProductosGenerales = () => {
           isOpen={modales.eliminar}
           onClose={cerrarModales}
           producto={selectedProduct}
-          onProductoEliminado={handleProductoActualizado}
+          onSuccess={handleProductoActualizado}
         />
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({ title, value, icon, color }) => {
+  const Icon = icon;
+  return (
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-600 mb-1">{title}</p>
+          <p className={`text-2xl font-bold ${color}`}>{value}</p>
+        </div>
+        <Icon className={`h-8 w-8 ${color} opacity-20`} />
       </div>
     </div>
   );

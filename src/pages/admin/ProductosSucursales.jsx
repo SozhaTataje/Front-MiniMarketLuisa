@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import {  FiPlus, FiTrash2, FiEdit, FiPackage} from "react-icons/fi";
+import { FiPlus, FiTrash2, FiEdit, FiPackage } from "react-icons/fi";
 import toast from "react-hot-toast";
 import api from "../../api/axiosInstance";
 import AddProductModal from "./modals/ProductoSucursalModal/AddProductModal";
@@ -18,13 +18,16 @@ const Productos = () => {
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [categorias, setCategorias] = useState([]);
 
-  const PLACEHOLDER_IMG = useMemo(() =>
-    `data:image/svg+xml;base64,${btoa(`
+  const PLACEHOLDER_IMG = useMemo(
+    () =>
+      `data:image/svg+xml;base64,${btoa(`
       <svg width="48" height="48" xmlns="http://www.w3.org/2000/svg">
         <rect width="100%" height="100%" fill="#f3f4f6"/>
         <text x="50%" y="50%" font-family="Arial" font-size="12" fill="#9ca3af" text-anchor="middle" dy=".3em">IMG</text>
       </svg>
-    `)}`, []);
+    `)}`,
+    []
+  );
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -50,7 +53,9 @@ const Productos = () => {
     if (!selectedSucursal) return;
     setLoading(true);
     try {
-      const res = await api.get(`/productosucursal/sucursal/${selectedSucursal}`);
+      const res = await api.get(
+        `/productosucursal/sucursal/${selectedSucursal}`
+      );
       setProductos(res.data);
     } catch (error) {
       console.error("Error cargando productos de sucursal:", error);
@@ -65,40 +70,54 @@ const Productos = () => {
     if (categorias.length && sucursales.length && selectedSucursal) {
       fetchProductosSucursal();
     }
-  }, [categorias.length, sucursales.length, selectedSucursal, fetchProductosSucursal]);
+  }, [
+    categorias.length,
+    sucursales.length,
+    selectedSucursal,
+    fetchProductosSucursal,
+  ]);
 
   const handleEditClick = useCallback((producto) => {
     setEditingProduct(producto);
     setShowEditModal(true);
   }, []);
 
-  const handleDeleteClick = useCallback((producto) => {
-    setDeletingProduct({
-      ...producto,
-      sucursal: producto.sucursal || { idsucursal: selectedSucursal },
-      idsucursal: producto.idsucursal || selectedSucursal,
-    });
-    setShowDeleteModal(true);
-  }, [selectedSucursal]);
+  const handleDeleteClick = useCallback(
+    (producto) => {
+      setDeletingProduct({
+        ...producto,
+        sucursal: producto.sucursal || { idsucursal: selectedSucursal },
+        idsucursal: producto.idsucursal || selectedSucursal,
+      });
+      setShowDeleteModal(true);
+    },
+    [selectedSucursal]
+  );
 
   const refreshData = useCallback(() => {
     fetchProductosSucursal();
   }, [fetchProductosSucursal]);
 
-  const getCategoriaName = useMemo(() => (idCategoria) => {
-    const categoria = categorias.find(c => c.id === idCategoria);
-    return categoria ? categoria.name : 'Sin categoría';
-  }, [categorias]);
+  const getCategoriaName = useMemo(
+    () => (idCategoria) => {
+      const categoria = categorias.find((c) => c.id === idCategoria);
+      return categoria ? categoria.name : "Sin categoría";
+    },
+    [categorias]
+  );
 
-  const getSucursalName = useMemo(() => (idSucursal) => {
-    const s = sucursales.find(s => s.idsucursal === idSucursal);
-    return s ? s.nombre : 'Desconocida';
-  }, [sucursales]);
+  const getSucursalName = useMemo(
+    () => (idSucursal) => {
+      const s = sucursales.find((s) => s.idsucursal === idSucursal);
+      return s ? s.nombre : "Desconocida";
+    },
+    [sucursales]
+  );
 
   const getStockColor = useCallback((stock) => {
-    if (stock === 0) return 'text-red-600 bg-red-100';
-    if (stock < 10) return 'text-yellow-600 bg-yellow-100';
-    return 'text-green-600 bg-green-100';
+    if (stock === 0) return "text-red-600 bg-red-100";
+    if (stock < 10) return "text-yellow-600 bg-yellow-100";
+    return "text-green-600 bg-green-100";
   }, []);
 
   return (
@@ -127,15 +146,20 @@ const Productos = () => {
               onChange={(e) => setSelectedSucursal(Number(e.target.value))}
               className="border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-purple-500"
             >
-              {sucursales.map(s => (
-                <option key={s.idsucursal} value={s.idsucursal}>{s.nombre} - {s.ciudad}</option>
+              {sucursales.map((s) => (
+                <option key={s.idsucursal} value={s.idsucursal}>
+                  {s.nombre} - {s.ciudad}
+                </option>
               ))}
             </select>
           </div>
         )}
 
-        <span className="text-xs text-gray-500">{categorias.length} categorías disponibles</span>
-        <span className="text-sm text-gray-500">{productos.length} productos encontrados</span>
+        <span className="text-xs text-gray-500">
+        </span>
+        <span className="text-sm text-gray-500">
+          {productos.length} productos encontrados
+        </span>
       </div>
 
       <div className="bg-white shadow-lg rounded-xl overflow-hidden">
@@ -147,7 +171,9 @@ const Productos = () => {
         ) : productos.length === 0 ? (
           <div className="text-center py-20">
             <FiPackage className="text-6xl text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No hay productos</h3>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              No hay productos
+            </h3>
             <button
               onClick={() => setShowProductModal(true)}
               className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
@@ -160,32 +186,42 @@ const Productos = () => {
             <table className="min-w-full">
               <thead className="bg-purple-50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Producto</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Categoría</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Stock</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Precio</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Estado</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase">Acciones</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase"> Producto </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase"> Categoría </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase"> Stock </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase"> Precio </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase"> Estado </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase"> Acciones </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {productos.map((p, i) => {
                   const producto = p.producto;
-                  const categoriaId = producto?.categoria?.id || producto?.idcategoria;
+                  const categoriaId =
+                    producto?.categoria?.id || producto?.idcategoria;
 
                   return (
-                    <tr key={producto?.idproducto || i} className="hover:bg-purple-50">
+                    <tr
+                      key={producto?.idproducto || i}
+                      className="hover:bg-purple-50"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <img
                             className="h-12 w-12 rounded-lg object-cover mr-4"
                             src={producto?.imagen || PLACEHOLDER_IMG}
                             alt={producto?.nombre}
-                            onError={(e) => { e.target.src = PLACEHOLDER_IMG; }}
+                            onError={(e) => {
+                              e.target.src = PLACEHOLDER_IMG;
+                            }}
                           />
                           <div>
-                            <div className="font-medium text-gray-900">{producto?.nombre || 'Sin nombre'}</div>
-                            <div className="text-sm text-gray-500 truncate max-w-xs">{producto?.descripcion || 'Sin descripción'}</div>
+                            <div className="font-medium text-gray-900">
+                              {producto?.nombre || "Sin nombre"}
+                            </div>
+                            <div className="text-sm text-gray-500 truncate max-w-xs">
+                              {producto?.descripcion || "Sin descripción"}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -195,24 +231,40 @@ const Productos = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs rounded-full ${getStockColor(p.stock)}`}>
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${getStockColor(
+                            p.stock
+                          )}`}
+                        >
                           {p.stock || 0} unidades
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-semibold">S/ {(producto?.precio || 0).toFixed(2)}</td>
+                      <td className="px-6 py-4 font-semibold">
+                        S/ {(producto?.precio || 0).toFixed(2)}
+                      </td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          producto?.estado ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {producto?.estado ? 'Activo' : 'Inactivo'}
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            producto?.estado
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {producto?.estado ? "Activo" : "Inactivo"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
-                          <button onClick={() => handleEditClick(p)} className="text-green-600 hover:text-green-800 p-1 hover:bg-green-100 rounded">
+                          <button
+                            onClick={() => handleEditClick(p)}
+                            className="text-green-600 hover:text-green-800 p-1 hover:bg-green-100 rounded"
+                          >
                             <FiEdit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDeleteClick(p)} className="text-red-600 hover:text-red-800 p-1 hover:bg-red-100 rounded">
+                          <button
+                            onClick={() => handleDeleteClick(p)}
+                            className="text-red-600 hover:text-red-800 p-1 hover:bg-red-100 rounded"
+                          >
                             <FiTrash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -229,7 +281,7 @@ const Productos = () => {
       <AddProductModal
         isOpen={showProductModal}
         onClose={() => setShowProductModal(false)}
-        onProductAdded={() => {
+        onProductAssigned={() => {
           toast.success("Producto agregado con éxito");
           setShowProductModal(false);
           refreshData();

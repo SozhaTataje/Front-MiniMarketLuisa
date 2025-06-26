@@ -8,11 +8,13 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
   const [error, setError] = useState('');
 
   const eliminarSoloDeSucursal = async () => {
-    const idProducto = producto?.producto?.idproducto;
+    const idProducto = producto?.producto?.idproducto || producto?.idproducto;
     const idSucursal = producto?.sucursal?.idsucursal || producto?.idsucursal;
 
     if (!idProducto || !idSucursal) {
-      setError('Error: faltan IDs');
+      const mensaje = 'Faltan datos necesarios para eliminar';
+      setError(mensaje);
+      toast.error(mensaje);
       return;
     }
 
@@ -20,45 +22,20 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
     setError('');
 
     try {
-      await api.delete(`/productosucursal/eliminar/${idProducto}/${idSucursal}`);
-      alert('✅ Producto eliminado de la sucursal');
-      onProductDeleted(); // actualiza vista
-      onClose(); // cierra modal
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data || 'Error al eliminar de sucursal');
-      toast.error('No se pudo eliminar de la sucursal');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const eliminarCompletamente = async () => {
-    const idProducto = producto?.producto?.idproducto || producto?.idproducto;
-
-    if (!idProducto) {
-      setError('ID de producto inválido');
-      return;
-    }
-
-    setIsDeleting(true);
-    setError('');
-
-    try {
-      await api.delete(`/producto/delete/${idProducto}`);
-      toast.success('Producto eliminado completamente');
-      onProductDeleted(); 
-      onClose();
-    } catch (err) {
-      console.error(err);
-      const msg = err.response?.data || 'Error al eliminar producto';
-      setError(msg);
-
-      if (err.response?.status === 400) {
-        toast.error(`No se puede eliminar: ${msg}`);
+      const res = await api.delete(`/productosucursal/eliminar/${idProducto}/${idSucursal}`);
+      
+      if (res.status === 200) {
+        toast.success('Producto eliminado de la sucursal');
+        onProductDeleted();
+        onClose();
       } else {
-        toast.error('Error al eliminar producto');
+        throw new Error('Error inesperado');
       }
+
+    } catch (err) {
+      const mensaje = err.response?.data || 'No se pudo eliminar el producto de la sucursal';
+      setError(mensaje);
+      toast.error(mensaje);
     } finally {
       setIsDeleting(false);
     }
@@ -109,14 +86,6 @@ const DeleteProductModal = ({ isOpen, onClose, producto, onProductDeleted, sucur
                 {isDeleting ? 'Eliminando de sucursal...' : `Eliminar de "${sucursalName}"`}
               </button>
             )}
-
-            <button
-              onClick={eliminarCompletamente}
-              disabled={isDeleting}
-              className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded transition"
-            >
-              {isDeleting ? 'Eliminando del sistema...' : 'Eliminar del sistema'}
-            </button>
 
             <button
               onClick={onClose}
