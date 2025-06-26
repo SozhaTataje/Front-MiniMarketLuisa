@@ -136,7 +136,7 @@ const ModalUsuario = ({ setShowUserForm, handleFinalizar }) => {
               </p>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              ⏰ Selecciona mínimo 1 hora desde ahora. Atención: 9:00 - 18:00.
+              Selecciona mínimo 1 hora desde ahora. Atención: 9:00 - 18:00.
             </p>
           </div>
 

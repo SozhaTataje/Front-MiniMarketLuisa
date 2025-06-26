@@ -13,6 +13,7 @@ import MiCuenta from "./pages/MiCuenta";
 import ConfirmarCorreo from "./pages/ConfirmarCorreo";
 import PedidoConfirmacion from "./pages/PedidoConfirmacion";
 import HistorialPedidos from "./pages/HistorialPedidos";
+import MisDatos from "./pages/MisDatos";
 
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import ProductosGenerales from "./pages/admin/ProductosGenerales";
@@ -64,6 +65,7 @@ function App() {
             <Route path="/confirmar-correo" element={<ConfirmarCorreo />} />
             <Route path="/pedido/:id" element={<PedidoConfirmacion />} />
             <Route path="/mis-pedidos" element={<HistorialPedidos />} />
+            <Route path="/mis-datos" element={<MisDatos />} />
           </Route>
 
           <Route
