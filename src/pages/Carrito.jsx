@@ -1,14 +1,20 @@
 import { useContext, useState, useEffect } from "react";
 import api from "../api/axiosInstance";
+import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
-import {FaShoppingCart, FaStore, FaTrash, FaPlus, FaMinus,} from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaStore,
+  FaTrash,
+  FaPlus,
+  FaMinus,
+} from "react-icons/fa";
 import ModalUsuario from "../components/ModalUsuario";
+import toast from "react-hot-toast";
 
 const Carrito = () => {
   const { carrito, setCarrito, vaciarCarrito } = useContext(CartContext);
   const [procesando, setProcesando] = useState(false);
-  const [sucursales, setSucursales] = useState([]);
-  const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
   const [stockSucursal, setStockSucursal] = useState({});
   const [showUserForm, setShowUserForm] = useState(false);
   const [userData, setUserData] = useState({
@@ -38,33 +44,25 @@ const Carrito = () => {
         console.error("Token inválido", e);
       }
     }
-    cargarSucursales();
-  }, []);
 
-  const cargarSucursales = async () => {
-    try {
-      const res = await api.get("/sucursal/all", { params: { param: "x" } });
-      setSucursales(res.data);
-      if (res.data.length > 0) {
-        setSucursalSeleccionada(res.data[0]);
-        cargarStock(res.data[0].idsucursal);
-      }
-    } catch (err) {
-      console.error("Error cargando sucursales", err);
+    const idsSucursalUnicos = [...new Set(carrito.map((p) => p.idSucursal))];
+    if (idsSucursalUnicos.length === 1) {
+      cargarStock(idsSucursalUnicos[0]);
     }
-  };
+  }, [carrito]);
 
   const cargarStock = async (id) => {
     try {
       const { data } = await api.get(`/productosucursal/sucursal/${id}`);
-      const stockMap = {};
-      data.forEach(
-        (p) =>
-          (stockMap[p.idProductoSucursal] = {
+      setStockSucursal((prevStock) => {
+        const nuevoStock = { ...prevStock };
+        data.forEach((p) => {
+          nuevoStock[p.idProductoSucursal] = {
             disponible: p.stock - (p.stockReservado || 0),
-          })
-      );
-      setStockSucursal(stockMap);
+          };
+        });
+        return nuevoStock;
+      });
     } catch (err) {
       console.error("Error stock", err);
     }
@@ -111,22 +109,59 @@ const Carrito = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleFinalizar = async () => {
-    if (procesando || carrito.length === 0 || !sucursalSeleccionada) return;
-    if (!validarCampos()) return setShowUserForm(true);
+  const handleFinalizarClick = () => {
+    if (
+      !userData.nombre ||
+      !userData.apellido ||
+      !userData.direccion ||
+      !userData.telefono ||
+      !userData.email ||
+      !userData.fechaEntrega
+    ) {
+      setShowUserForm(true);
+    } else {
+      handleFinalizar();
+    }
+  };
+
+  const handleFinalizar = async (formData = null) => {
+    if (procesando || carrito.length === 0) return;
+
+    const idsSucursalUnicos = [...new Set(carrito.map((p) => p.idSucursal))];
+    if (idsSucursalUnicos.length > 1) {
+      toast.error(
+        "No se puede realizar el pedido con productos de diferentes sucursales."
+      );
+      return;
+    }
+
+    if (formData) setUserData(formData);
+    const data = formData || userData;
+    const errores = {};
+    if (!data.nombre || !data.nombre.trim()) errores.nombre = true;
+    if (!data.apellido || !data.apellido.trim()) errores.apellido = true;
+    if (!data.direccion || !data.direccion.trim()) errores.direccion = true;
+    if (!/^\d{9,}$/.test(data.telefono)) errores.telefono = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errores.email = true;
+    const hora = new Date(data.fechaEntrega).getHours();
+    if (!data.fechaEntrega || hora < 9 || hora >= 18)
+      errores.fechaEntrega = true;
+
+    setErrors(errores);
+    if (Object.keys(errores).length > 0) return;
 
     try {
       setProcesando(true);
       const pedido = {
-        ...userData,
+        ...data,
         fechapedido: new Date().toISOString(),
-        fechaderecojo: userData.fechaEntrega,
+        fechaderecojo: data.fechaEntrega,
         estado: "PENDIENTE",
         productos: carrito.map((p) => ({
           idProductoSucursal: p.idProductoSucursal,
           cantidad: p.cantidad,
         })),
-        local: sucursalSeleccionada.nombre,
+        local: carrito[0]?.nombreSucursal || "Sucursal no definida",
       };
       const res = await api.post("/pedido/save", pedido);
       const pago = await api.get(`/pago/url/${res.data.idpedido}`);
@@ -139,6 +174,8 @@ const Carrito = () => {
     }
   };
 
+  const idsSucursalUnicos = [...new Set(carrito.map((p) => p.idSucursal))];
+
   if (carrito.length === 0)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 text-center">
@@ -147,12 +184,12 @@ const Carrito = () => {
           <h2 className="text-2xl font-bold text-gray-700 mb-2">
             Tu carrito está vacío
           </h2>
-          <a
-            href="/productos"
+          <Link
+            to="/productos"
             className="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
             Ver Productos
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -165,37 +202,29 @@ const Carrito = () => {
             Tu Carrito
           </h1>
 
+          {idsSucursalUnicos.length > 1 && (
+            <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-6 text-center font-medium">
+              No puedes realizar pedidos con productos de distintas sucursales.
+            </div>
+          )}
+
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white p-6 rounded-xl shadow-lg">
-                <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
+                <h3 className="font-bold text-lg flex items-center gap-2 mb-2">
                   <FaStore className="text-purple-600" />
                   Sucursal
                 </h3>
-                <div className="flex flex-wrap gap-3">
-                  {sucursales.map((s) => (
-                    <button
-                      key={s.idsucursal}
-                      onClick={() => {
-                        setSucursalSeleccionada(s);
-                        cargarStock(s.idsucursal);
-                      }}
-                      className={`px-4 py-2 rounded-lg ${
-                        sucursalSeleccionada?.idsucursal === s.idsucursal
-                          ? "bg-purple-600 text-white"
-                          : "bg-gray-100 hover:bg-purple-100"
-                      }`}
-                    >
-                      {s.nombre}
-                    </button>
-                  ))}
-                </div>
+                <p className="text-gray-800 font-semibold bg-gray-100 px-4 py-2 rounded-lg w-max">
+                  {carrito[0]?.nombreSucursal || "Sucursal no definida"}
+                </p>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {carrito.map((item) => {
                   const disponible =
-                    stockSucursal[item.idProductoSucursal]?.disponible || 0;
+                    stockSucursal[item.idProductoSucursal]?.disponible ??
+                    item.stock;
                   return (
                     <div
                       key={item.idProductoSucursal}
@@ -254,7 +283,7 @@ const Carrito = () => {
               <h3 className="text-xl font-bold mb-4">Resumen</h3>
               <div className="space-y-2 mb-6">
                 <div className="flex justify-between">
-                  <span>Productos ({carrito.length})</span>
+                  <span>Productos</span>
                   <span>S/ {total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-xl font-bold border-t pt-2">
@@ -264,15 +293,15 @@ const Carrito = () => {
               </div>
               <div className="space-y-3">
                 <button
-                  onClick={handleFinalizar}
-                  disabled={procesando}
+                  onClick={handleFinalizarClick}
+                  disabled={procesando || idsSucursalUnicos.length > 1}
                   className="w-full py-3 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 disabled:bg-gray-300"
                 >
                   {procesando ? "Procesando..." : "Finalizar Compra"}
                 </button>
                 <button
                   onClick={vaciarCarrito}
-                  className="w-full py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
+                  className="w-full py-2 border bg-red-500 text-white rounded-lg hover:bg-red-700"
                 >
                   Vaciar Carrito
                 </button>
@@ -290,6 +319,7 @@ const Carrito = () => {
             setShowUserForm={setShowUserForm}
             validarCampos={validarCampos}
             handleFinalizar={handleFinalizar}
+            sucursal={{ nombre: carrito[0]?.nombreSucursal || "" }}
           />
         )}
       </div>

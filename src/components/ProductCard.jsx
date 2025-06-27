@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
+import toast from "react-hot-toast";
 
 const ProductCard = ({ productosucursal }) => {
   const { agregarAlCarrito } = useContext(CartContext);
@@ -11,7 +12,7 @@ const ProductCard = ({ productosucursal }) => {
     !productosucursal.producto ||
     !productosucursal.producto.nombre
   ) {
-    return null; 
+    return null;
   }
 
   const {
@@ -20,24 +21,23 @@ const ProductCard = ({ productosucursal }) => {
     idProductoSucursal,
     idSucursal,
     nombreSucursal,
+    sucursal,
   } = productosucursal;
 
- 
   const aumentar = () => setCantidad((c) => Math.min(c + 1, stock));
   const disminuir = () => setCantidad((c) => Math.max(c - 1, 1));
 
-
   const manejarAgregar = () => {
     if (cantidad > stock) {
-      alert("No hay suficiente stock disponible.");
+      toast.error("No hay suficiente stock disponible.");
       return;
     }
 
     agregarAlCarrito({
       idProducto: producto.idProducto,
       idProductoSucursal,
-      idSucursal,
-      nombreSucursal, 
+      idSucursal: sucursal?.idsucursal || idSucursal,
+      nombreSucursal: sucursal?.nombre || nombreSucursal,
       nombre: producto.nombre,
       precio: producto.precio,
       imagen: producto.imagen,
@@ -45,7 +45,8 @@ const ProductCard = ({ productosucursal }) => {
       stock,
     });
 
-    setCantidad(1); 
+    toast.success(`Se agregó "${producto.nombre}" al carrito`);
+    setCantidad(1);
   };
 
   return (
@@ -98,7 +99,7 @@ const ProductCard = ({ productosucursal }) => {
         <button
           onClick={manejarAgregar}
           className="bg-purple-600 text-white rounded-lg px-6 py-2 font-semibold hover:bg-purple-900 transition"
-          disabled={stock === 0} 
+          disabled={stock === 0}
           title={stock === 0 ? "Producto sin stock" : "Añadir al carrito"}
         >
           Añadir

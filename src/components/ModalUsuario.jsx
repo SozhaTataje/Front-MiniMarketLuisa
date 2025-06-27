@@ -1,21 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
-const ModalUsuario = ({ setShowUserForm, handleFinalizar }) => {
-  const {register,handleSubmit,formState: { errors },watch,} = useForm();
+const ModalUsuario = ({ setShowUserForm, handleFinalizar, sucursal }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
+
+  const [tipoEntrega, setTipoEntrega] = useState("domicilio");
 
   const onSubmit = (data) => {
+    if (tipoEntrega === "tienda") {
+      data.direccion = "RECOJO EN TIENDA";
+    }
     setShowUserForm(false);
     handleFinalizar(data);
   };
 
-  const fechaMinima = new Date(Date.now() + 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 16);
-
   const fechaSeleccionada = watch("fechaEntrega");
   const horaSeleccionada = new Date(fechaSeleccionada || "").getHours();
-  const horaInvalida = horaSeleccionada < 9 || horaSeleccionada >= 18;
+  const horaInvalida = horaSeleccionada < 9 || horaSeleccionada >= 22;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -25,6 +31,38 @@ const ModalUsuario = ({ setShowUserForm, handleFinalizar }) => {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="text-sm text-gray-600 mb-4">
+            Sucursal del pedido:{" "}
+            <span className="font-semibold text-purple-700">
+              {sucursal?.nombre}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-2">
+            <button
+              type="button"
+              onClick={() => setTipoEntrega("domicilio")}
+              className={`py-3 rounded-xl border font-medium transition-all ${
+                tipoEntrega === "domicilio"
+                  ? "bg-purple-600 text-white border-purple-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-purple-300"
+              }`}
+            >
+              Entrega a domicilio
+            </button>
+            <button
+              type="button"
+              onClick={() => setTipoEntrega("tienda")}
+              className={`py-3 rounded-xl border font-medium transition-all ${
+                tipoEntrega === "tienda"
+                  ? "bg-purple-600 text-white border-purple-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-purple-300"
+              }`}
+            >
+              Recoger en tienda
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <input
@@ -58,21 +96,23 @@ const ModalUsuario = ({ setShowUserForm, handleFinalizar }) => {
             </div>
           </div>
 
-          <div>
-            <input
-              type="text"
-              placeholder="Dirección"
-              className={`w-full border px-4 py-3 rounded-xl ${
-                errors.direccion ? "border-red-500" : "border-gray-300"
-              }`}
-              {...register("direccion", { required: true })}
-            />
-            {errors.direccion && (
-              <p className="text-sm text-red-500 mt-1">
-                La dirección es obligatoria.
-              </p>
-            )}
-          </div>
+          {tipoEntrega === "domicilio" && (
+            <div>
+              <input
+                type="text"
+                placeholder="Dirección"
+                className={`w-full border px-4 py-3 rounded-xl ${
+                  errors.direccion ? "border-red-500" : "border-gray-300"
+                }`}
+                {...register("direccion", { required: true })}
+              />
+              {errors.direccion && (
+                <p className="text-sm text-red-500 mt-1">
+                  La dirección es obligatoria.
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -122,21 +162,45 @@ const ModalUsuario = ({ setShowUserForm, handleFinalizar }) => {
           <div>
             <input
               type="datetime-local"
-              min={fechaMinima}
               className={`w-full border px-4 py-3 rounded-xl ${
                 errors.fechaEntrega || (fechaSeleccionada && horaInvalida)
                   ? "border-red-500"
                   : "border-gray-300"
               }`}
-              {...register("fechaEntrega", { required: true })}
+              {...register("fechaEntrega", {
+                required: true,
+                validate: (value) => {
+                  const date = new Date(value);
+                  const now = new Date();
+                  const selectedHour = date.getHours();
+
+                  const maxDate = new Date();
+                  maxDate.setDate(now.getDate() + 5);
+
+                  return (
+                    date > now &&
+                    date <= maxDate &&
+                    selectedHour >= 9 &&
+                    selectedHour < 22
+                  );
+                },
+              })}
+              min={new Date().toISOString().slice(0, 16)}
+              max={
+                new Date(new Date().setDate(new Date().getDate() + 2))
+                  .toISOString()
+                  .split("T")[0] + "T22:00"
+              }
             />
             {(errors.fechaEntrega || (fechaSeleccionada && horaInvalida)) && (
               <p className="text-sm text-red-500 mt-1">
-                Selecciona una hora entre 9:00 a.m. y 6:00 p.m.
+                Selecciona una hora entre 9:00 a.m. y 10:00 p.m. dentro de los
+                próximos 3 días.
               </p>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              Selecciona mínimo 1 hora desde ahora. Atención: 9:00 - 18:00.
+              Puedes elegir fecha de hoy hasta dentro de 2 días. Horario
+              disponible: 09:00 - 22:00.
             </p>
           </div>
 
