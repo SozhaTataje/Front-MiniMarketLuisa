@@ -208,8 +208,8 @@ const ProductosSucursales = () => {
                         S/ {(producto?.precio || 0).toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs rounded-full ${producto?.estado ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                          {producto?.estado ? "Activo" : "Inactivo"}
+                        <span className={`px-2 py-1 text-xs rounded-full ${producto?.activo ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                          {producto?.activo ? "Activo" : "Inactivo"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
