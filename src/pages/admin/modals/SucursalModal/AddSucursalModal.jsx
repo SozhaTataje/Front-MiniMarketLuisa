@@ -24,7 +24,7 @@ const AddSucursalModal = ({ isOpen, onClose, onAdded }) => {
   });
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyBgGNXF0P28UyZUTKfcrQu3UKZfWUEpMEU", 
+    googleMapsApiKey: "AIzaSyBgGNXF0P28UyZUTKfcrQu3UKZfWUEpMEU",
   });
 
   const handleChange = (e) => {
@@ -73,72 +73,122 @@ const AddSucursalModal = ({ isOpen, onClose, onAdded }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       ariaHideApp={false}
-      className="p-6 bg-white rounded shadow-lg max-w-md mx-auto my-10 max-h-[90vh] flex flex-col"
+      className="bg-white rounded-3xl shadow-2xl max-w-2xl mx-auto my-8 max-h-[95vh] flex flex-col"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4"
     >
-      <div className="overflow-y-auto flex-grow">
-        <h2 className="text-xl font-bold mb-4">Agregar Sucursal</h2>
-        <input
-          name="nombre"
-          placeholder="Nombre"
-          className="w-full mb-2 p-2 border"
-          value={form.nombre}
-          onChange={handleChange}
-        />
-        <input
-          name="direccion"
-          placeholder="Dirección"
-          className="w-full mb-2 p-2 border"
-          value={form.direccion}
-          onChange={handleChange}
-        />
-        <input
-          name="ciudad"
-          placeholder="Ciudad"
-          className="w-full mb-2 p-2 border"
-          value={form.ciudad}
-          onChange={handleChange}
-        />
-
-        <div className="mb-4">
-          <p className="text-sm text-gray-600 mb-1">
-            Selecciona la ubicación en el mapa:
-          </p>
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle}
-            zoom={15}
-            center={center}
-            onClick={handleMapClick}
-          >
-            {form.lat && form.lon && (
-              <Marker position={{ lat: form.lat, lng: form.lon }} />
-            )}
-          </GoogleMap>
-        </div>
-
-        <input
-          name="lat"
-          type="number"
-          placeholder="Latitud"
-          className="w-full mb-2 p-2 border"
-          value={form.lat}
-          readOnly
-        />
-        <input
-          name="lon"
-          type="number"
-          placeholder="Longitud"
-          className="w-full mb-2 p-2 border"
-          value={form.lon}
-          readOnly
-        />
+      <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-t-3xl p-6 text-white">
+        <h2 className="text-2xl font-bold text-center">
+        Agregar Nueva Sucursal
+        </h2>
+        
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="bg-purple-600 text-white px-4 py-2 rounded mt-4"
-      >
-        Guardar
-      </button>
+      <div className="overflow-y-auto flex-grow p-6 space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Nombre de la Sucursal
+            </label>
+            <input
+              name="nombre"
+              placeholder="Ej: Sucursal Centro"
+              className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+              value={form.nombre}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Ciudad
+            </label>
+            <input
+              name="ciudad"
+              placeholder="Ej: Lima"
+              className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+              value={form.ciudad}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Dirección Completa
+          </label>
+          <input
+            name="direccion"
+            placeholder="Ej: Av. Principal 123, Centro Histórico"
+            className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+            value={form.direccion}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="bg-gray-50 rounded-2xl p-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+            Ubicación en el Mapa
+          </label>
+          <p className="text-xs text-gray-500 mb-3">
+            Haz clic en el mapa para marcar la ubicación exacta de tu sucursal
+          </p>
+          <div className="rounded-xl overflow-hidden shadow-md">
+            <GoogleMap
+              mapContainerStyle={mapContainerStyle}
+              zoom={15}
+              center={center}
+              onClick={handleMapClick}
+            >
+              {form.lat && form.lon && (
+                <Marker position={{ lat: form.lat, lng: form.lon }} />
+              )}
+            </GoogleMap>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Latitud
+            </label>
+            <input
+              name="lat"
+              type="number"
+              placeholder="Automático"
+              className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 text-sm"
+              value={form.lat}
+              readOnly
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Longitud
+            </label>
+            <input
+              name="lon"
+              type="number"
+              placeholder="Automático"
+              className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 text-sm"
+              value={form.lon}
+              readOnly
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6 bg-gray-50 rounded-b-3xl flex gap-3">
+        <button
+          onClick={onClose}
+          className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-105"
+        >
+          Guardar Sucursal
+        </button>
+      </div>
     </Modal>
   );
 };

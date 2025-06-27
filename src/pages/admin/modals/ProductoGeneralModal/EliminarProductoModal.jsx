@@ -16,7 +16,6 @@ const EliminarProductoModal = ({ isOpen, onClose, producto, onSuccess }) => {
     try {
       const response = await api.delete(`/producto/delete/${producto.idproducto}`);
       
-      // Mostrar el mensaje específico del backend
       const mensaje = response.data;
       
       if (mensaje.includes('✅')) {
@@ -32,7 +31,6 @@ const EliminarProductoModal = ({ isOpen, onClose, producto, onSuccess }) => {
     } catch (error) {
       console.error('Error al eliminar producto:', error);
       
-      // Manejar diferentes tipos de error del backend
       const errorMessage = error.response?.data || 'Error al eliminar el producto';
       
       if (errorMessage.includes('pedidos activos')) {
@@ -49,7 +47,6 @@ const EliminarProductoModal = ({ isOpen, onClose, producto, onSuccess }) => {
   };
 
   const getWarningInfo = () => {
-    // Simulamos la lógica para mostrar advertencias
     return {
       type: 'warning',
       title: 'Advertencia de Eliminación',

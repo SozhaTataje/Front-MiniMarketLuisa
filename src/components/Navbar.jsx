@@ -1,6 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext, useRef, useEffect } from "react";
-import { FaShoppingCart, FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaUserCircle,
+  FaBars,
+  FaTimes,
+  FaCog,
+} from "react-icons/fa";
+import { FiChevronDown } from "react-icons/fi";
 import { Search } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -110,9 +117,9 @@ const Navbar = () => {
               <Link
                 to="/admin/dashboard"
                 onClick={() => setMenuOpen(false)}
-                className="text-purple-600 font-bold"
+                className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-1 px-5 py-3 rounded-full"
               >
-                Admin Panel
+                <FaCog className="w-4 h-4 text-white" />
               </Link>
             )}
 
@@ -120,7 +127,7 @@ const Navbar = () => {
               <Link
                 to="/mi-cuenta"
                 onClick={() => setMenuOpen(false)}
-                className="hover:text-purple-600 font-medium"
+                className=" text-black-700 font-medium px-3 py-2 rounded-full"
               >
                 Mi cuenta
               </Link>
@@ -128,36 +135,39 @@ const Navbar = () => {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="text-purple-600 text-xl hover:text-purple-800 flex items-center gap-1"
+                  className="text-purple-700 flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 shadow-md border border-purple-200"
                   aria-label="Perfil usuario"
                 >
-                  <FaUserCircle />
+                  <div className="relative">
+                    <FaUserCircle className="text-xl" />
+                  </div>
                   <span className="hidden md:inline-block font-semibold truncate max-w-[120px]">
                     {usuario.nombre}
                   </span>
-                  <svg
-                    className={`w-4 h-4 ml-1 transition-transform duration-200 ${
-                      dropdownOpen ? "rotate-180" : "rotate-0"
+                  <FiChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      dropdownOpen ? "rotate-180" : ""
                     }`}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  />
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                    <ul className="py-1 text-gray-800">
-                       <li className="px-4 py-2 text-xs text-gray-800 border-t border-gray-200">
-                        {usuario.email}
-                      </li>
+                  <div className="absolute right-0 mt-3 w-64 bg-white backdrop-blur-xl border border-purple-200 rounded-2xl shadow-2xl z-10 overflow-hidden">
+                    <div className="bg-purple-600 p-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <FaUserCircle className="text-2xl" />
+                        </div>
+                        <div>
+                          <p className="font-bold">{usuario.nombre}</p>
+                          <p className="text-purple-100 text-xs ">
+                            {usuario.email}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <ul className="py-2">
                       <li>
                         <Link
                           to="/mis-pedidos"
@@ -165,8 +175,17 @@ const Navbar = () => {
                             setDropdownOpen(false);
                             setMenuOpen(false);
                           }}
-                          className="block px-4 py-2 hover:bg-purple-100 text-sm font-medium"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 text-gray-700 transition-all duration-200 group"
                         >
+                          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                            <svg
+                              className="w-4 h-4 text-purple-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                            </svg>
+                          </div>
                           Mis pedidos
                         </Link>
                       </li>
@@ -177,17 +196,43 @@ const Navbar = () => {
                             setDropdownOpen(false);
                             setMenuOpen(false);
                           }}
-                          className="block px-4 py-2 hover:bg-purple-100 text-sm font-medium"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 text-gray-700 transition-all duration-200 group"
                         >
-                          Mis datos personales
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                            <svg
+                              className="w-4 h-4 text-blue-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          Mis datos
                         </Link>
                       </li>
 
-                      <li className="border-t border-gray-200">
+                      <li className="border-t border-gray-200 mt-2">
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 text-sm font-medium text-black hover:bg-red-500 hover:text-white transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-gray-700  hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
                         >
+                          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                            <svg
+                              className="w-4 h-4 text-red-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
                           Cerrar sesión
                         </button>
                       </li>
@@ -196,7 +241,6 @@ const Navbar = () => {
                 )}
               </div>
             )}
-
             <Link
               to="/carrito"
               onClick={() => setMenuOpen(false)}

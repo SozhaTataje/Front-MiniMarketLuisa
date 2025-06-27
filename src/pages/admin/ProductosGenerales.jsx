@@ -129,13 +129,13 @@ const ProductosGenerales = () => {
             title="Activos"
             value={stats.activos}
             icon={CheckCircle}
-            color="text-green-600"
+            color="text-purple-600"
           />
           <StatCard
             title="Inactivos"
             value={stats.total - stats.activos}
             icon={AlertCircle}
-            color="text-red-600"
+            color="text-purple-600"
           />
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
@@ -177,7 +177,7 @@ const ProductosGenerales = () => {
               <button
                 onClick={cargarDatos}
                 disabled={loading}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50"
+                className="bg-gray-200 hover:bg-gray-300 text-gray px-4 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-10"
               >
                 <RefreshCw
                   className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
