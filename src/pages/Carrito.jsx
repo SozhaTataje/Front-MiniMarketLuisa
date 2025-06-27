@@ -1,16 +1,10 @@
-import { useContext, useState, useEffect } from "react";
-import api from "../api/axiosInstance";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CartContext } from "../context/CartContext";
-import {
-  FaShoppingCart,
-  FaStore,
-  FaTrash,
-  FaPlus,
-  FaMinus,
-} from "react-icons/fa";
+import { FaShoppingCart, FaStore, FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import ModalUsuario from "../components/ModalUsuario";
 import toast from "react-hot-toast";
+import { CartContext } from "../context/CartContext";
+import api from "../api/axiosInstance";
 
 const Carrito = () => {
   const { carrito, setCarrito, vaciarCarrito } = useContext(CartContext);
@@ -97,30 +91,20 @@ const Carrito = () => {
 
   const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
 
-  const validarCampos = () => {
-    const e = {};
-    if (!userData.nombre.trim()) e.nombre = true;
-    if (!userData.apellido.trim()) e.apellido = true;
-    if (!userData.direccion.trim()) e.direccion = true;
-    if (!/^\d{9,}$/.test(userData.telefono)) e.telefono = true;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)) e.email = true;
-    if (!userData.fechaEntrega) e.fechaEntrega = true;
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
   const handleFinalizarClick = () => {
-    if (
-      !userData.nombre ||
-      !userData.apellido ||
-      !userData.direccion ||
-      !userData.telefono ||
-      !userData.email ||
-      !userData.fechaEntrega
-    ) {
-      setShowUserForm(true);
-    } else {
+    const camposCompletos = [
+      userData.nombre,
+      userData.apellido,
+      userData.direccion || "RECOJO EN TIENDA",
+      userData.telefono,
+      userData.email,
+      userData.fechaEntrega,
+    ].every(Boolean);
+
+    if (camposCompletos) {
       handleFinalizar();
+    } else {
+      setShowUserForm(true);
     }
   };
 
@@ -137,6 +121,7 @@ const Carrito = () => {
 
     if (formData) setUserData(formData);
     const data = formData || userData;
+
     const errores = {};
     if (!data.nombre || !data.nombre.trim()) errores.nombre = true;
     if (!data.apellido || !data.apellido.trim()) errores.apellido = true;
@@ -144,8 +129,7 @@ const Carrito = () => {
     if (!/^\d{9,}$/.test(data.telefono)) errores.telefono = true;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errores.email = true;
     const hora = new Date(data.fechaEntrega).getHours();
-    if (!data.fechaEntrega || hora < 9 || hora >= 18)
-      errores.fechaEntrega = true;
+    if (!data.fechaEntrega || hora < 9 || hora >= 22) errores.fechaEntrega = true;
 
     setErrors(errores);
     if (Object.keys(errores).length > 0) return;
@@ -317,7 +301,6 @@ const Carrito = () => {
             errors={errors}
             setErrors={setErrors}
             setShowUserForm={setShowUserForm}
-            validarCampos={validarCampos}
             handleFinalizar={handleFinalizar}
             sucursal={{ nombre: carrito[0]?.nombreSucursal || "" }}
           />

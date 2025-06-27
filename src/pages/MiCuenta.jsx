@@ -31,7 +31,7 @@ const MiCuenta = () => {
 
     try {
       if (modo === "login") {
-        const res = await api.post("api/usuario/login", {
+        const res = await api.post("/api/usuario/login", {
           email: form.email,
           password: form.password,
         });
