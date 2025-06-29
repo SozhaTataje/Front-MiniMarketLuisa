@@ -2,12 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ModalUsuario = ({ setShowUserForm, handleFinalizar, sucursal }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm();
+  const { register, handleSubmit, formState: { errors }, watch,  } = useForm();
 
   const [tipoEntrega, setTipoEntrega] = useState("domicilio");
 
@@ -187,7 +182,7 @@ const ModalUsuario = ({ setShowUserForm, handleFinalizar, sucursal }) => {
               })}
               min={new Date().toISOString().slice(0, 16)}
               max={
-                new Date(new Date().setDate(new Date().getDate() + 2))
+                new Date(new Date().setDate(new Date().getDate() + 5))
                   .toISOString()
                   .split("T")[0] + "T22:00"
               }
@@ -195,11 +190,11 @@ const ModalUsuario = ({ setShowUserForm, handleFinalizar, sucursal }) => {
             {(errors.fechaEntrega || (fechaSeleccionada && horaInvalida)) && (
               <p className="text-sm text-red-500 mt-1">
                 Selecciona una hora entre 9:00 a.m. y 10:00 p.m. dentro de los
-                próximos 3 días.
+                próximos 5 días.
               </p>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              Puedes elegir fecha de hoy hasta dentro de 2 días. Horario
+              Puedes elegir fecha de hoy hasta dentro de 5 días. Horario
               disponible: 09:00 - 22:00.
             </p>
           </div>

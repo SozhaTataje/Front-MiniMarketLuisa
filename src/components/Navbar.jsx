@@ -6,6 +6,8 @@ import {
   FaBars,
   FaTimes,
   FaCog,
+  FaClipboardList,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import { Search } from "lucide-react";
@@ -17,7 +19,6 @@ const Navbar = () => {
   const { cantidadTotal } = useContext(CartContext);
   const { usuario, logout } = useAuth();
   const navigate = useNavigate();
-
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -178,13 +179,7 @@ const Navbar = () => {
                           className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 text-gray-700 transition-all duration-200 group"
                         >
                           <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                            <svg
-                              className="w-4 h-4 text-purple-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                            </svg>
+                            <FaClipboardList className="w-4 h-4 text-purple-600" />
                           </div>
                           Mis pedidos
                         </Link>
@@ -199,17 +194,7 @@ const Navbar = () => {
                           className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 text-gray-700 transition-all duration-200 group"
                         >
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                            <svg
-                              className="w-4 h-4 text-blue-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
+                            <FaUser className="w-4 h-4 text-blue-600" />
                           </div>
                           Mis datos
                         </Link>
@@ -218,20 +203,10 @@ const Navbar = () => {
                       <li className="border-t border-gray-200 mt-2">
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-gray-700  hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
                         >
                           <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
-                            <svg
-                              className="w-4 h-4 text-red-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
+                            <FaSignOutAlt className="w-4 h-4 text-red-600" />
                           </div>
                           Cerrar sesión
                         </button>
