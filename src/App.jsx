@@ -1,6 +1,6 @@
 import {BrowserRouter,Routes,Route,Navigate,Outlet,useLocation,} from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider} from "./context/AuthContext";
 
 import Navbar from "./components/Navbar";
 import AdminLayout from "./layouts/AdminLayout";
@@ -14,6 +14,7 @@ import ConfirmarCorreo from "./pages/ConfirmarCorreo";
 import PedidoConfirmacion from "./pages/PedidoConfirmacion";
 import HistorialPedidos from "./pages/HistorialPedidos";
 import MisDatos from "./pages/MisDatos";
+import RutaPrivada from "./components/RutaPrivada";
 
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import ProductosGenerales from "./pages/admin/ProductosGenerales";
@@ -24,23 +25,9 @@ import Pedidos from "./pages/admin/Pedidos";
 import Categorias from "./pages/admin/Categorias";
 
 
-
-function RutaPrivada({ children, rolRequerido }) {
-  const { usuario } = useAuth();
-
-  if (!usuario) return <Navigate to="/mi-cuenta" />;
-
-  const roles = Array.isArray(usuario.roles) ? usuario.roles : usuario.rol ? [usuario.rol] : [];
-
-  if (rolRequerido && !roles.includes(rolRequerido)) return <Navigate to="/" />;
-
-  return children;
-}
-
 function ClienteLayout() {
   const location = useLocation();
   const esRutaAdmin = location.pathname.startsWith("/admin");
-
   return (
     <>
       {!esRutaAdmin && <Navbar />}
@@ -54,7 +41,6 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Toaster position="top-right" reverseOrder={false} />
-        
         <Routes>
           <Route element={<ClienteLayout />}>
             <Route path="/" element={<Home />} />
@@ -84,8 +70,6 @@ function App() {
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="pedidos" element={<Pedidos />} />
             <Route path="categorias" element={<Categorias />} />
-            
-
           </Route>
         </Routes>
       </AuthProvider>

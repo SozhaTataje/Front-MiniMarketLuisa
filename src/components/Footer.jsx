@@ -1,11 +1,6 @@
-import { FaPhone, FaEnvelope, FaClock, FaMapMarkerAlt, FaStore, FaHeart } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaClock, FaMapMarkerAlt, FaStore } from "react-icons/fa";
 
 const Footer = () => {
-    const horarios = [
-    { dia: "Lunes - Viernes", horario: "9:00 AM - 10:00 PM" },
-    { dia: "Sábado", horario: "9:00 AM - 10:00 PM" },
-    { dia: "Domingo", horario: "Cerrado" }
-  ];
   return (
     <footer className="bg-purple-800 text-white mt-12">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -17,8 +12,8 @@ const Footer = () => {
           <p className="text-sm text-purple-100">
             Tu minimarket de confianza, cerca de ti con los mejores productos.
           </p>
-          
         </div>
+
         <div className="space-y-3">
           <h4 className="text-lg font-semibold text-yellow-300 flex items-center gap-2">
             <FaPhone className="text-sm" />
@@ -39,20 +34,25 @@ const Footer = () => {
             </div>
           </div>
         </div>
+
         <div className="space-y-3">
           <h4 className="text-lg font-semibold text-yellow-300 flex items-center gap-2">
             <FaClock className="text-sm" />
             Horarios de Atención
           </h4>
           <div className="text-sm text-purple-100 space-y-2">
-            {horarios.map((item, index) => (
-              <div key={index} className="flex justify-between border-b border-white/10 pb-1">
-                <span className="font-medium">{item.dia}</span>
-                <span className={item.horario === "Cerrado" ? "text-red-300" : ""}>
-                  {item.horario}
-                </span>
-              </div>
-            ))}
+            <div className="flex justify-between border-b border-white/10 pb-1">
+              <span className="font-medium">Lunes - Viernes</span>
+              <span>9:00 AM - 10:00 PM</span>
+            </div>
+            <div className="flex justify-between border-b border-white/10 pb-1">
+              <span className="font-medium">Sábado</span>
+              <span>9:00 AM - 10:00 PM</span>
+            </div>
+            <div className="flex justify-between border-b border-white/10 pb-1">
+              <span className="font-medium">Domingo</span>
+              <span className="text-red-300">Cerrado</span>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiTag } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiTrash2, FiTag } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
 import api from "../../api/axiosInstance";
 import AddCategoriaModal from "./modals/CategoriasModal/AddCategoriaModal";
@@ -7,7 +7,6 @@ import EditCategoriaModal from "./modals/CategoriasModal/EditCategoriaModal";
 import DeleteCategoriaModal from "./modals/CategoriasModal/DeleteCategoriaModal";
 
 const Categorias = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -61,10 +60,6 @@ const Categorias = () => {
     );
   }
 
-  const filteredCategorias = categorias.filter((categoria) =>
-    categoria?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div className="p-6">
       <Toaster position="top-right" />
@@ -80,28 +75,13 @@ const Categorias = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="relative flex-1 max-w-md">
-            <FiSearch className="absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar categorías..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="flex gap-4">
-            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              Total: {categorias.length}
-            </span>
-          </div>
-        </div>
+        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+          Total: {categorias.length}
+        </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCategorias.map((categoria) => (
+        {categorias.map((categoria) => (
           <div key={categoria.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-3 bg-purple-100 rounded-full">
@@ -132,26 +112,22 @@ const Categorias = () => {
         ))}
       </div>
 
-      {filteredCategorias.length === 0 && (
+      {categorias.length === 0 && (
         <div className="text-center py-12">
           <FiTag className="mx-auto text-gray-400 text-6xl mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {searchTerm ? "No se encontraron categorías" : "No hay categorías registradas"}
+            No hay categorías registradas
           </h3>
           <p className="text-gray-500 mb-6">
-            {searchTerm
-              ? "Intenta con un término de búsqueda diferente"
-              : "Comienza creando tu primera categoría de productos"}
+            Comienza creando tu primera categoría de productos
           </p>
-          {!searchTerm && (
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto"
-            >
-              <FiPlus />
-              Nueva Categoría
-            </button>
-          )}
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto"
+          >
+            <FiPlus />
+            Nueva Categoría
+          </button>
         </div>
       )}
 

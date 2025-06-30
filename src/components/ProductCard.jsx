@@ -15,14 +15,7 @@ const ProductCard = ({ productosucursal }) => {
     return null;
   }
 
-  const {
-    producto,
-    stock = 0,
-    idProductoSucursal,
-    idSucursal,
-    nombreSucursal,
-    sucursal,
-  } = productosucursal;
+  const {producto, stock = 0, idProductoSucursal, idSucursal,  nombreSucursal,  sucursal,  } = productosucursal;
 
   const aumentar = () => setCantidad((c) => Math.min(c + 1, stock));
   const disminuir = () => setCantidad((c) => Math.max(c - 1, 1));

@@ -59,7 +59,7 @@ const AddProductModal = ({ isOpen, onClose, onProductAssigned, sucursales = [] }
     }));
   };
 
-  // ✅ ahora recibimos "data" del formulario
+
   const onSubmit = async (data) => {
     const selectedProductId = parseInt(data.producto);
     if (!selectedProductId) {
@@ -83,8 +83,8 @@ const AddProductModal = ({ isOpen, onClose, onProductAssigned, sucursales = [] }
         )
       );
       toast.success("Producto asignado correctamente");
-      onProductAssigned(); // 🔁 actualiza la lista en el padre
-      onClose(); // ✅ cierra el modal
+      onProductAssigned(); 
+      onClose(); 
     } catch (error) {
       toast.error(error.response?.data || "Error al asignar sucursales");
     } finally {
