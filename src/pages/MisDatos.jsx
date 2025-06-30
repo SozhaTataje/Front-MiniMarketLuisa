@@ -13,19 +13,8 @@ const MisDatos = () => {
     telefono: false,
   });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      nombre: "",
-      apellido: "",
-      telefono: "",
-      email: "",
-    },
-  });
+  const { register,  handleSubmit,   reset,  formState: { errors },  } = useForm({
+    defaultValues: {      nombre: "",      apellido: "",      telefono: "",      email: "",    },  });
 
   useEffect(() => {
     if (usuario) {
@@ -57,7 +46,6 @@ const MisDatos = () => {
       </h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Campo: Nombre */}
         <div>
           <label className="block text-sm font-semibold mb-1 text-gray-700">
             Nombre
@@ -88,8 +76,6 @@ const MisDatos = () => {
             <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>
           )}
         </div>
-
-        {/* Campo: Apellido */}
         <div>
           <label className="block text-sm font-semibold mb-1 text-gray-700">
             Apellido
@@ -120,8 +106,6 @@ const MisDatos = () => {
             <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>
           )}
         </div>
-
-        {/* Campo: Teléfono */}
         <div>
           <label className="block text-sm font-semibold mb-1 text-gray-700">
             Teléfono

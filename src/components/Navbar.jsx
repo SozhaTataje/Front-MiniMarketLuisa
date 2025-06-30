@@ -1,14 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext, useRef, useEffect } from "react";
-import {
-  FaShoppingCart,
-  FaUserCircle,
-  FaBars,
-  FaTimes,
-  FaCog,
-  FaClipboardList,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import {FaShoppingCart, FaUserCircle, FaBars, FaTimes, FaCog, FaClipboardList, FaSignOutAlt,FaUser} from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import { Search } from "lucide-react";
 import { CartContext } from "../context/CartContext";
@@ -143,7 +135,6 @@ const Navbar = () => {
                     <FaUserCircle className="text-xl" />
                   </div>
                   <span className="hidden md:inline-block font-semibold truncate max-w-[120px]">
-                    {usuario.nombre}
                   </span>
                   <FiChevronDown
                     className={`w-4 h-4 transition-transform duration-300 ${

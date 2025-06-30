@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 const ModalUsuario = ({ setShowUserForm, handleFinalizar, sucursal }) => {
   const { register, handleSubmit, formState: { errors }, watch,  } = useForm();
 
-  const [tipoEntrega, setTipoEntrega] = useState("domicilio");
+  const [tipoEntrega, setTipoEntrega] = useState("tienda");
 
   const onSubmit = (data) => {
     if (tipoEntrega === "tienda") {

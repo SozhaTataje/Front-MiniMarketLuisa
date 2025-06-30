@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  FiSearch,
-  FiMapPin,
-  FiShoppingBag,
-  FiFilter
-} from "react-icons/fi";
+import { FiSearch, FiMapPin,  FiShoppingBag} from "react-icons/fi";
 import Footer from "../components/Footer";
 import api from "../api/axiosInstance";
 import ProductCard from "../components/ProductCard";
@@ -24,8 +19,7 @@ const ProductList = () => {
   const terminoBusqueda = query.get("buscar") || "";
 
   useEffect(() => {
-    api
-      .get("/sucursal/all?param=x")
+    api.get("/sucursal/all?param=x")
       .then((res) => {
         setSucursales(res.data);
         if (res.data.length > 0) setSucursalId(res.data[0].idsucursal);
@@ -51,8 +45,7 @@ const ProductList = () => {
 
   return (
     <>
-      {/* Header*/}
-      <header className="bg-purple-50 border-b border-purple-100 py-6 px-4 sm:px-6">
+       <header className="bg-purple-50 border-b border-purple-100 py-6 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <FiShoppingBag className="text-purple-600 w-7 h-7" />
@@ -93,7 +86,6 @@ const ProductList = () => {
         </div>
       </header>
 
-      {/* Contenido principal */}
       <section className="py-10 px-4 sm:px-6 bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {cargando ? (

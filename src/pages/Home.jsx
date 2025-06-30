@@ -48,12 +48,10 @@ const Home = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Slider />
-
       <section className="py-16 px-4 sm:px-6 md:px-8 max-w-[1400px] mx-auto">
         <h2 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 drop-shadow-md mb-8">
           Productos Destacados
         </h2>
-
         <div className="mb-8 flex justify-center">
           <select
             value={sucursalId}

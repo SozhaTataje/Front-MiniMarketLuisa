@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FiPlus, FiTrash2, FiEdit, FiPackage } from "react-icons/fi";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle,
-  Package,
-  TrendingUp,
-  Filter,
-  Eye,
-} from "lucide-react";
+import { FiTrash2, FiEdit, FiPackage } from "react-icons/fi";
+import {  Search,  Plus,  RefreshCw,  AlertCircle,  CheckCircle,  Package,  Filter,  Eye,} from "lucide-react";
 import api from "../../api/axiosInstance";
 import CrearProductoModal from "./modals/ProductoGeneralModal/CrearProductoModal";
 import EditarProductoModal from "./modals/ProductoGeneralModal/EditarProductoModal";

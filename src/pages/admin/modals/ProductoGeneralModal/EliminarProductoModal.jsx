@@ -125,7 +125,6 @@ const EliminarProductoModal = ({ isOpen, onClose, producto, onSuccess }) => {
             </div>
           </div>
 
-          {/* Warning message */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
@@ -154,8 +153,7 @@ const EliminarProductoModal = ({ isOpen, onClose, producto, onSuccess }) => {
             </div>
           </div>
 
-          {/* Confirmation question */}
-          <div className="text-center mb-6">
+           <div className="text-center mb-6">
             <p className="text-gray-700 font-medium">
               ¿Estás seguro que deseas eliminar este producto?
             </p>
@@ -163,27 +161,8 @@ const EliminarProductoModal = ({ isOpen, onClose, producto, onSuccess }) => {
               El sistema determinará el tipo de eliminación según los pedidos asociados
             </p>
           </div>
+         </div>
 
-          {/* Security features */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="h-4 w-4 text-blue-600" />
-              <span className="font-medium text-blue-800 text-sm">Protecciones del Sistema</span>
-            </div>
-            <div className="space-y-1 text-xs text-blue-700">
-              <div className="flex items-center gap-2">
-                <Clock className="h-3 w-3" />
-                <span>Los pedidos activos bloquean la eliminación</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Package className="h-3 w-3" />
-                <span>El historial de ventas se preserva automáticamente</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer con botones */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-end gap-3">
           <button
             onClick={onClose}

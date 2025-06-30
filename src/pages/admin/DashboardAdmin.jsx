@@ -12,36 +12,31 @@ const DashboardAdmin = () => {
   const [productos, setProductos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
-  const [sucursales, setSucursales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     ventasHoy: 0,
     pedidosPendientes: 0,
-    productosBajoStock: 0,
     ingresosMes: 0,
-  });
+   });
 
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
-  
-  useEffect(() => {
+    useEffect(() => {
     fetchAllData();
   }, []);
 
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [resProductos, resPedidos, resUsuarios, resSucursales] = await Promise.all([
+      const [resProductos, resPedidos, resUsuarios, ] = await Promise.all([
         api.get("/producto/all?param=x"),
         api.get("/pedido/all"),
         api.get("/api/usuario/all"),
-        api.get("/sucursal/all?param=x"),
       ]);
       setProductos(resProductos.data);
       setPedidos(resPedidos.data);
       setUsuarios(resUsuarios.data);
-      setSucursales(resSucursales.data);
       calcularEstadisticas(resPedidos.data, resProductos.data);
     } catch (error) {
       console.error("Error al cargar datos:", error);
@@ -51,19 +46,18 @@ const DashboardAdmin = () => {
     }
   };
 
-  const calcularEstadisticas = (pedidosData, productosData) => {
+  const calcularEstadisticas = (pedidosData) => {
     const hoy = new Date().toDateString();
     const ventasHoy = pedidosData.filter(p =>
       new Date(p.fecha).toDateString() === hoy && p.estado === "ENTREGADO"
     ).length;
     const pedidosPendientes = pedidosData.filter(p => p.estado === "PENDIENTE").length;
-    const productosBajoStock = Math.floor(productosData.length * 0.15);
     const ingresosMes = pedidosData
       .filter(p => p.estado === "ENTREGADO")
       .reduce((total, p) =>
         total + (p.pedidoProducto?.reduce((sum, pp) => sum + pp.subtotal, 0) || 0), 0
       );
-    setStats({ ventasHoy, pedidosPendientes, productosBajoStock, ingresosMes });
+    setStats({ ventasHoy, pedidosPendientes,  ingresosMes });
   };
 
   const handleLogout = () => {
@@ -75,10 +69,10 @@ const DashboardAdmin = () => {
 
 
   const barData = {
-    labels: ["Productos", "Pedidos", "Usuarios", "Sucursales"],
+    labels: ["Productos", "Pedidos", "Usuarios", ],
     datasets: [{
       label: "Cantidad",
-      data: [productos.length, pedidos.length, usuarios.length, sucursales.length],
+      data: [productos.length, pedidos.length, usuarios.length],
       backgroundColor: ["#7c3aed", "#9333ea", "#a855f7", "#b575f7"],
       borderRadius: 8,
     }]
@@ -197,19 +191,16 @@ const DashboardAdmin = () => {
 
       <div className="p-6">
       
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <StatCard label="Ventas Hoy" value={stats.ventasHoy} icon={<FiTrendingUp />} bgColor="bg-green-50" textColor="text-green-700" />
           <StatCard label="Pedidos Pendientes" value={stats.pedidosPendientes} icon={<FiClipboard />} bgColor="bg-orange-50" textColor="text-orange-700" />
-          <StatCard label="Stock Bajo" value={stats.productosBajoStock} icon={<FiShoppingBag />} bgColor="bg-red-50" textColor="text-red-700" />
           <StatCard label="Ingresos del Mes" value={`S/ ${stats.ingresosMes.toFixed(2)}`} icon={<FiTrendingUp />} bgColor="bg-blue-50" textColor="text-blue-700" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <StatCard label="Total Productos" value={productos.length} icon={<FiBox />} />
           <StatCard label="Total Pedidos" value={pedidos.length} icon={<FiClipboard />} />
           <StatCard label="Usuarios" value={usuarios.length} icon={<FiUsers />} />
-          <StatCard label="Sucursales" value={sucursales.length} icon={<FiMapPin />} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

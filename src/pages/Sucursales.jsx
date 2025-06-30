@@ -100,7 +100,6 @@ function Sucursales() {
       {sucursalSeleccionada && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-hidden animate-scale-in">
-            {/* Encabezado del modal */}
             <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6 relative">
               <button
                 className="absolute top-4 right-4 text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-lg"
@@ -119,10 +118,8 @@ function Sucursales() {
               </div>
             </div>
 
-            {/* Contenido del modal */}
             <div className="p-6">
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Info */}
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <div className="bg-gray-50 rounded-lg p-4">
@@ -157,8 +154,6 @@ function Sucursales() {
                     </div>
                   </div>
                 </div>
-
-                {/* Mapa */}
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4">Ubicación</h3>
                   <div className="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-200">
