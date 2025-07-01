@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
         logout();
       } else {
         const roles = decoded.rol.map(r => r.authority);
-        setUsuario({ idusuario: decoded.idusuario, email: decoded.email, nombre: decoded.nombre, roles });
+        setUsuario({ idusuario: decoded.idusuario, email: decoded.email, nombre: decoded.nombre, roles, telefono: decoded.telefono,apellido: decoded.apellido});
       }
     }
     setLoading(false);
