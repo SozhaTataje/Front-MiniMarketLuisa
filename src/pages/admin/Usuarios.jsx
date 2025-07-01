@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axiosInstance";
 import RegisterUserModal from "./modals/UsuariosModal/RegisterUserModal";
-import { FiPlus, FiSearch, FiUsers, FiMail, FiPhone, FiX } from "react-icons/fi";
+import { FiPlus, FiSearch, FiUsers, FiMail, FiX } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
 
 const Usuarios = () => {
