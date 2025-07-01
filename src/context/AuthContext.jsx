@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -15,17 +15,17 @@ export const AuthProvider = ({ children }) => {
         logout();
       } else {
         const roles = decoded.rol.map(r => r.authority);
-        setUsuario({ email: decoded.email, nombre: decoded.nombre, roles });
+        setUsuario({ idusuario: decoded.idusuario, email: decoded.email, nombre: decoded.nombre, roles });
       }
     }
-    setLoading(false); 
+    setLoading(false);
   }, []);
 
   const login = (token) => {
     localStorage.setItem('token', token);
     const decoded = jwtDecode(token);
     const roles = decoded.rol.map(r => r.authority);
-    setUsuario({ email: decoded.email, nombre: decoded.nombre, roles });
+    setUsuario({ idusuario: decoded.idusuario, email: decoded.email, nombre: decoded.nombre, roles });
   };
   const logout = () => {
     localStorage.removeItem('token');
