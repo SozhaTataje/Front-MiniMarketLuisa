@@ -25,7 +25,7 @@ const EditCategoriaModal = ({ isOpen, onClose, categoria, onUpdated }) => {
     try {
       setIsSubmitting(true);
 
-      await api.put(`/categoria/update/${categoria.id}`, { name }); // ← USAMOS categoria.id
+      await api.put(`/categoria/update/${categoria.id}`, { name }); 
 
       toast.success("Categoría actualizada exitosamente");
       onUpdated();
