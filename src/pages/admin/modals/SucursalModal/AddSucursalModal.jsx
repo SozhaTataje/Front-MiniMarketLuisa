@@ -78,9 +78,9 @@ const AddSucursalModal = ({ isOpen, onClose, onAdded }) => {
     >
       <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-t-3xl p-6 text-white">
         <h2 className="text-2xl font-bold text-center">
-        Agregar Nueva Sucursal
+          Agregar Nueva Sucursal
         </h2>
-        
+
       </div>
 
       <div className="overflow-y-auto flex-grow p-6 space-y-5">

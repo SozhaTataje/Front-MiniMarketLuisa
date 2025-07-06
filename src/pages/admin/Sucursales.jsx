@@ -46,7 +46,7 @@ const Sucursales = () => {
         </button>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-600">
           <div className="flex items-center justify-between">
             <div>
