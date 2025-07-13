@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { FiSearch, FiMapPin,  FiShoppingBag} from "react-icons/fi";
+import { FiSearch, FiMapPin, FiShoppingBag } from "react-icons/fi";
 import Footer from "../components/Footer";
+import UbicacionSelector from "../components/UbicacionSelector";
+import { useUbicacion } from "../context/UbicacionContext";
 import api from "../api/axiosInstance";
 import ProductCard from "../components/ProductCard";
 
@@ -12,20 +14,17 @@ function useQuery() {
 const ProductList = () => {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [sucursales, setSucursales] = useState([]);
   const [sucursalId, setSucursalId] = useState("");
+  const { sucursalesDisponibles } = useUbicacion();
 
   const query = useQuery();
   const terminoBusqueda = query.get("buscar") || "";
 
   useEffect(() => {
-    api.get("/sucursal/all?param=x")
-      .then((res) => {
-        setSucursales(res.data);
-        if (res.data.length > 0) setSucursalId(res.data[0].idsucursal);
-      })
-      .catch((e) => console.error("Error cargando sucursales:", e));
-  }, []);
+    if (sucursalesDisponibles.length > 0) {
+      setSucursalId(sucursalesDisponibles[0].idsucursal);
+    }
+  }, [sucursalesDisponibles]);
 
   useEffect(() => {
     if (!sucursalId) return;
@@ -41,11 +40,18 @@ const ProductList = () => {
     p.producto?.nombre?.toLowerCase().includes(terminoBusqueda.toLowerCase())
   );
 
-  const sucursalActual = sucursales.find((s) => s.idsucursal == sucursalId);
+  const sucursalActual = sucursalesDisponibles.find((s) => s.idsucursal == sucursalId);
+
+  const handleUbicacionChange = () => {
+ 
+    if (sucursalesDisponibles.length > 0) {
+      setSucursalId(sucursalesDisponibles[0].idsucursal);
+    }
+  };
 
   return (
     <>
-       <header className="bg-purple-50 border-b border-purple-100 py-6 px-4 sm:px-6">
+      <header className="bg-purple-50 border-b border-purple-100 py-6 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <FiShoppingBag className="text-purple-600 w-7 h-7" />
@@ -69,19 +75,28 @@ const ProductList = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <FiMapPin className="text-purple-600" />
-            <select
-              value={sucursalId}
-              onChange={(e) => setSucursalId(e.target.value)}
-              className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
-            >
-              {sucursales.map((s) => (
-                <option key={s.idsucursal} value={s.idsucursal}>
-                  {s.nombre} - {s.ciudad}
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center gap-4">
+            <UbicacionSelector 
+              onUbicacionChange={handleUbicacionChange}
+              className="w-64"
+            />
+            
+            {sucursalesDisponibles.length > 1 && (
+              <div className="flex items-center gap-2">
+                <FiMapPin className="text-purple-600" />
+                <select
+                  value={sucursalId}
+                  onChange={(e) => setSucursalId(e.target.value)}
+                  className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                >
+                  {sucursalesDisponibles.map((s) => (
+                    <option key={s.idsucursal} value={s.idsucursal}>
+                      {s.nombre} - {s.ciudad}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -134,8 +149,6 @@ const ProductList = () => {
                     {productosFiltrados.length}
                   </span>
                 </div>
-
-               
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">

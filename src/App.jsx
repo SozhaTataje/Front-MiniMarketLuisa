@@ -1,6 +1,7 @@
-import {BrowserRouter,Routes,Route,Navigate,Outlet,useLocation,} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider} from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
+import { UbicacionProvider } from "./context/UbicacionContext";
 
 import Navbar from "./components/Navbar";
 import AdminLayout from "./layouts/AdminLayout";
@@ -23,6 +24,7 @@ import SucursalesAdmin from "./pages/admin/Sucursales";
 import Usuarios from "./pages/admin/Usuarios";
 import Pedidos from "./pages/admin/Pedidos";
 import Categorias from "./pages/admin/Categorias";
+import MisUbicaciones from "./pages/MisUbicaciones";
 
 
 function ClienteLayout() {
@@ -40,8 +42,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Toaster position="top-right" reverseOrder={false} />
-        <Routes>
+        <UbicacionProvider>
+          <Toaster position="top-right" reverseOrder={false} />
+          <Routes>
           <Route element={<ClienteLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/productos" element={<ProductList />} />
@@ -53,6 +56,14 @@ function App() {
             <Route path="/mis-pedidos" element={<HistorialPedidos />} />
             <Route path="/mis-datos" element={<MisDatos />} />
           </Route>
+          <Route
+            path="/mis-ubicaciones"
+            element={
+              <RutaPrivada rolRequerido="ROLE_USER">
+                <MisUbicaciones />
+              </RutaPrivada>
+            }
+          />
 
           <Route
             path="/admin"
@@ -72,9 +83,10 @@ function App() {
             <Route path="categorias" element={<Categorias />} />
           </Route>
         </Routes>
-      </AuthProvider>
-    </BrowserRouter>
-  );
+          </UbicacionProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    );
 }
 
 export default App;
