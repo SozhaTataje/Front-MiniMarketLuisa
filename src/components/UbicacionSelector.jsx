@@ -34,8 +34,7 @@ const UbicacionSelector = ({ onUbicacionChange, selectedUbicacionId, className =
       const response = await api.get(`/ubicacion-usuario/${usuario.email}`);
       const ubicacionesData = Array.from(response.data) || [];
       setUbicaciones(ubicacionesData);
-      
-      // Si no hay ubicación seleccionada y hay ubicaciones disponibles, seleccionar la primera
+     
       if (!ubicacionSeleccionada && ubicacionesData.length > 0) {
         const primeraUbicacion = ubicacionesData[0];
         cambiarUbicacion(primeraUbicacion);

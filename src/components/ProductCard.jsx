@@ -15,7 +15,14 @@ const ProductCard = ({ productosucursal }) => {
     return null;
   }
 
-  const {producto, stock = 0, idProductoSucursal, idSucursal,  nombreSucursal,  sucursal,  } = productosucursal;
+  const {
+    producto,
+    stock = 0,
+    idProductoSucursal,
+    idSucursal,
+    nombreSucursal,
+    sucursal,
+  } = productosucursal;
 
   const aumentar = () => setCantidad((c) => Math.min(c + 1, stock));
   const disminuir = () => setCantidad((c) => Math.max(c - 1, 1));
@@ -42,6 +49,12 @@ const ProductCard = ({ productosucursal }) => {
     setCantidad(1);
   };
 
+  const getStockColor = (stock) => {
+    if (stock < 5) return "bg-red-100 text-red-700";
+    if (stock < 31) return "bg-yellow-100 text-yellow-800";
+    return "bg-green-100 text-green-700";
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col p-4">
       <div className="overflow-hidden rounded-lg">
@@ -52,6 +65,13 @@ const ProductCard = ({ productosucursal }) => {
         />
       </div>
 
+      <div
+        className={`text-sm font-medium px-2 py-1 rounded-full w-max mt-4 ${getStockColor(
+          stock
+        )}`}
+      >
+        {stock} disponibles
+      </div>
       <h3 className="text-gray-900 font-semibold text-lg truncate mt-4">
         {producto.nombre}
       </h3>
