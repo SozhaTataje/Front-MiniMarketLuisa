@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://54.210.224.54',
+        target: 'http://localhost:3600',
         changeOrigin: true,
         secure: false,
       },
       '/producto': {
-        target: 'http://54.210.224.54',
+        target: 'http://localhost:3600',
         changeOrigin: true,
         secure: false,
       },
