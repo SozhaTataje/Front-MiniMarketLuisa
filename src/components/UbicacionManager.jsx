@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 
-// Componente principal de gestión de ubicaciones
 const UbicacionManager = () => {
   const { usuario } = useAuth();
   const [ubicaciones, setUbicaciones] = useState([]);

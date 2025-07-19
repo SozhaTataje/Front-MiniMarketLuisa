@@ -8,7 +8,6 @@ export const UbicacionProvider = ({ children }) => {
   const [ubicacionSeleccionada, setUbicacionSeleccionada] = useState(null);
   const [sucursalesDisponibles, setSucursalesDisponibles] = useState([]);
 
-  // Cargar ubicación guardada en localStorage al inicializar
   useEffect(() => {
     if (usuario?.email) {
       const ubicacionGuardada = localStorage.getItem(`ubicacion_${usuario.email}`);
@@ -23,7 +22,6 @@ export const UbicacionProvider = ({ children }) => {
     }
   }, [usuario]);
 
-  // Guardar ubicación en localStorage cuando cambie
   useEffect(() => {
     if (usuario?.email && ubicacionSeleccionada) {
       localStorage.setItem(`ubicacion_${usuario.email}`, JSON.stringify(ubicacionSeleccionada));
