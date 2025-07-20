@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://54.210.224.54'
+  baseURL: 'https://desarrollowebintegrado-1.onrender.com'
 });
 
 api.interceptors.request.use((config) => {

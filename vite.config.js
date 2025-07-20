@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3600',
+        target: 'https://desarrollowebintegrado-1.onrender.com',
         changeOrigin: true,
         secure: false,
       },
       '/producto': {
-        target: 'http://localhost:3600',
+        target: 'https://desarrollowebintegrado-1.onrender.com',
         changeOrigin: true,
         secure: false,
       },
