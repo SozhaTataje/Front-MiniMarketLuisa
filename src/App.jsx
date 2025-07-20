@@ -45,48 +45,48 @@ function App() {
         <UbicacionProvider>
           <Toaster position="top-right" reverseOrder={false} />
           <Routes>
-          <Route element={<ClienteLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<ProductList />} />
-            <Route path="/carrito" element={<Carrito />} />
-            <Route path="/sucursales" element={<Sucursales />} />
-            <Route path="/mi-cuenta" element={<MiCuenta />} />
-            <Route path="/confirmar-correo" element={<ConfirmarCorreo />} />
-            <Route path="/pedido/:id" element={<PedidoConfirmacion />} />
-            <Route path="/mis-pedidos" element={<HistorialPedidos />} />
-            <Route path="/mis-datos" element={<MisDatos />} />
-          </Route>
-          <Route
-            path="/mis-ubicaciones"
-            element={
-              <RutaPrivada rolRequerido="ROLE_USER">
-                <MisUbicaciones />
-              </RutaPrivada>
-            }
-          />
+            <Route element={<ClienteLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/productos" element={<ProductList />} />
+              <Route path="/carrito" element={<Carrito />} />
+              <Route path="/sucursales" element={<Sucursales />} />
+              <Route path="/mi-cuenta" element={<MiCuenta />} />
+              <Route path="/confirmar-correo" element={<ConfirmarCorreo />} />
+              <Route path="/pedido/:id" element={<PedidoConfirmacion />} />
+              <Route path="/mis-pedidos" element={<HistorialPedidos />} />
+              <Route path="/mis-datos" element={<MisDatos />} />
+            </Route>
+            <Route
+              path="/mis-ubicaciones"
+              element={
+                <RutaPrivada rolRequerido="ROLE_USER">
+                  <MisUbicaciones />
+                </RutaPrivada>
+              }
+            />
 
-          <Route
-            path="/admin"
-            element={
-              <RutaPrivada rolRequerido="ROLE_ADMIN">
-                <AdminLayout />
-              </RutaPrivada>
-            }
-          >
-            <Route index element={<DashboardAdmin />} />
-            <Route path="dashboard" element={<DashboardAdmin />} />
-            <Route path="productosGenerales" element={<ProductosGenerales />} />
-            <Route path="productosSucursales" element={<ProductosSucursales />} />
-            <Route path="sucursales" element={<SucursalesAdmin />} />
-            <Route path="usuarios" element={<Usuarios />} />
-            <Route path="pedidos" element={<Pedidos />} />
-            <Route path="categorias" element={<Categorias />} />
-          </Route>
-        </Routes>
-          </UbicacionProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    );
+            <Route
+              path="/admin"
+              element={
+                <RutaPrivada rolRequerido="ROLE_ADMIN">
+                  <AdminLayout />
+                </RutaPrivada>
+              }
+            >
+              <Route index element={<DashboardAdmin />} />
+              <Route path="dashboard" element={<DashboardAdmin />} />
+              <Route path="productosGenerales" element={<ProductosGenerales />} />
+              <Route path="productosSucursales" element={<ProductosSucursales />} />
+              <Route path="sucursales" element={<SucursalesAdmin />} />
+              <Route path="usuarios" element={<Usuarios />} />
+              <Route path="pedidos" element={<Pedidos />} />
+              <Route path="categorias" element={<Categorias />} />
+            </Route>
+          </Routes>
+        </UbicacionProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App;
