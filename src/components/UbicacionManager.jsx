@@ -139,7 +139,7 @@ const UbicacionCard = ({ ubicacion, onUpdate }) => {
   );
 };
 
-// Modal para agregar nueva ubicación
+
 const AgregarUbicacionModal = ({ onClose, onUbicacionAgregada, userEmail }) => {
   const [formData, setFormData] = useState({
     ubicacion: '',
