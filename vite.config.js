@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://desarrollowebintegrado-1.onrender.com',
+        target: 'https://desarrollowebintegrado-13w4.onrender.com',
         changeOrigin: true,
         secure: false,
       },
       '/producto': {
-        target: 'https://desarrollowebintegrado-1.onrender.com',
+        target: 'https://desarrollowebintegrado-13w4.onrender.com',
         changeOrigin: true,
         secure: false,
       },
