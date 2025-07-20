@@ -10,12 +10,12 @@ export default defineConfig({
       '/api': {
         target: 'https://desarrollowebintegrado-13w4.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
       '/producto': {
         target: 'https://desarrollowebintegrado-13w4.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },
