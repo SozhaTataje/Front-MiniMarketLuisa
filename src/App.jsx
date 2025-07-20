@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, useLocation, } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from "./context/AuthContext";
 import { UbicacionProvider } from "./context/UbicacionContext";
