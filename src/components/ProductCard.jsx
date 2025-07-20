@@ -24,6 +24,8 @@ const ProductCard = ({ productosucursal }) => {
     sucursal,
   } = productosucursal;
 
+  const esGeneral = !idSucursal && !sucursal?.idsucursal; // Verifica si es producto general
+
   const aumentar = () => setCantidad((c) => Math.min(c + 1, stock));
   const disminuir = () => setCantidad((c) => Math.max(c - 1, 1));
 
@@ -82,42 +84,49 @@ const ProductCard = ({ productosucursal }) => {
         S/ {producto.precio.toFixed(2)}
       </p>
 
-      <div className="mt-auto flex items-center gap-3 pt-4">
-        <div className="flex items-center border border-gray-200 rounded-md overflow-hidden w-max">
+      {/* Si es producto general, no mostrar controles */}
+      {esGeneral ? (
+        <p className="mt-4 text-sm italic text-gray-500">
+          Producto general. No disponible para compra directa.
+        </p>
+      ) : (
+        <div className="mt-auto flex items-center gap-3 pt-4">
+          <div className="flex items-center border border-gray-200 rounded-md overflow-hidden w-max">
+            <button
+              onClick={disminuir}
+              className="px-3 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min={1}
+              max={stock}
+              value={cantidad}
+              onChange={(e) => {
+                const val = Math.max(1, Math.min(stock, Number(e.target.value)));
+                setCantidad(val);
+              }}
+              className="w-12 text-center border-none focus:ring-0 focus:outline-none"
+            />
+            <button
+              onClick={aumentar}
+              className="px-3 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
+            >
+              +
+            </button>
+          </div>
+
           <button
-            onClick={disminuir}
-            className="px-3 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
+            onClick={manejarAgregar}
+            className="bg-purple-600 text-white rounded-lg px-6 py-2 font-semibold hover:bg-purple-900 transition"
+            disabled={stock === 0}
+            title={stock === 0 ? "Producto sin stock" : "Añadir al carrito"}
           >
-            −
-          </button>
-          <input
-            type="number"
-            min={1}
-            max={stock}
-            value={cantidad}
-            onChange={(e) => {
-              const val = Math.max(1, Math.min(stock, Number(e.target.value)));
-              setCantidad(val);
-            }}
-            className="w-12 text-center border-none focus:ring-0 focus:outline-none"
-          />
-          <button
-            onClick={aumentar}
-            className="px-3 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
-          >
-            +
+            Añadir
           </button>
         </div>
-
-        <button
-          onClick={manejarAgregar}
-          className="bg-purple-600 text-white rounded-lg px-6 py-2 font-semibold hover:bg-purple-900 transition"
-          disabled={stock === 0}
-          title={stock === 0 ? "Producto sin stock" : "Añadir al carrito"}
-        >
-          Añadir
-        </button>
-      </div>
+      )}
     </div>
   );
 };
